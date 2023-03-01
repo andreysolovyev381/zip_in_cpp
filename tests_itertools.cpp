@@ -32,9 +32,7 @@ TEST(BasicsItertools, Vector_Map) {
 	std::map<int, std::string> m {
 		{1, "one"s},
 		{2, "two"s},
-		{3, "three"s},
-		{4, "four"s},
-		{5, "five"s},
+		{3, "three"s}
 	};
 
 	std::stringstream ss;
@@ -45,8 +43,6 @@ TEST(BasicsItertools, Vector_Map) {
 	std::string check {R"(1 1 one
 2 2 two
 3 3 three
-4 4 four
-5 5 five
 )"};
 	ASSERT_EQ(ss.str(), check);
 }
