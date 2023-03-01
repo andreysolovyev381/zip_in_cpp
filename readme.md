@@ -10,13 +10,12 @@ Pretty much straightforward, see the test file. Here is the most vivid example:
 			{1, "one"s},
 			{2, "two"s},
 			{3, "three"s},
-			{4, "four"s},
-			{5, "five"s},
 	};
 	std::string s { "abcdefghhlk" };
 
 	std::stringstream ss;
 
+	/// Here it is, see the for loop expr
 	for (auto const& [first, pair, ch] : itertools::zip(arr, m, s)) {
 		ss << first << ' ' << pair.first << ' ' << pair.second << ' ' << ch << '\n';
 	}
