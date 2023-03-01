@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.21)
 set (PROJECT_NAME zip_in_cpp)
 project(${PROJECT_NAME}
-        VERSION 0.1
-        DESCRIPTION "Financial time series project"
+        VERSION 1.0
+        DESCRIPTION "Zip in Cpp"
         LANGUAGES CXX)
 
 set(CMAKE_CXX_FLAGS " -Wall -Wextra -Wpedantic -Werror -Wreturn-std-move -Wno-c99-extensions -Wno-missing-field-initializers -Wno-gnu-zero-variadic-macro-arguments -o")
