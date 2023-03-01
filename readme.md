@@ -5,19 +5,15 @@ I like small useful snippets, like this one. Let myself have an entertaining nig
 #### Usage
 Pretty much straightforward, see the test file. Here is the most vivid example:
 ```c++
-	std::vector<int> arr{ 1,2,3,4,5 };
-	std::map<int, std::string> m {
-			{1, "one"s},
-			{2, "two"s},
-			{3, "three"s},
-	};
+	std::vector<int> v{ 1,2,3,4,5 };
+	std::map<int, std::string> m { {1, "one"s}, {2, "two"s}, {3, "three"s}, };
 	std::string s { "abcdefghhlk" };
 
 	std::stringstream ss;
 
 	/// Here it is, see the for loop expr
-	for (auto const& [first, pair, ch] : itertools::zip(arr, m, s)) {
-		ss << first << ' ' << pair.first << ' ' << pair.second << ' ' << ch << '\n';
+	for (auto const& [i, pair, ch] : itertools::zip(v, m, s)) {
+		ss << i << ' ' << pair.first << ' ' << pair.second << ' ' << ch << '\n';
 	}
 ```
 
