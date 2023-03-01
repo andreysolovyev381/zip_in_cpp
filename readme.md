@@ -3,8 +3,8 @@
 I like small useful snippets, like this one. Let myself have an entertaining night while coding this exercise.
 
 #### Usage
-Pretty much strightforward, see the test file. Here is the most vivid example:
-```
+Pretty much straightforward, see the test file. Here is the most vivid example:
+```c++
 	std::vector<int> arr{ 1,2,3,4,5 };
 	std::map<int, std::string> m {
 			{1, "one"s},
