@@ -90,8 +90,8 @@ namespace itertools {
 			  , end_ (containers.end()...)
 	  {}
 
-	  zip_type begin() { return begin_ ; }
-	  zip_type end() { return end_; }
+	  zip_type begin() const { return begin_ ; }
+	  zip_type end() const { return end_; }
   private:
 	  zip_type begin_, end_;
   };
