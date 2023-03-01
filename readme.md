@@ -1,6 +1,6 @@
 ### Zip in C++
 #### Reasoning
-I like small useful classes, like this one. Let myself have an entertaining night while coding this one.
+I like small useful snippets, like this one. Let myself have an entertaining night while coding this exercise.
 
 #### Usage
 Pretty much strightforward, see the test file. Here is the most vivid example:
