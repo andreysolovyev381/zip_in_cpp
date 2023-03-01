@@ -15,13 +15,13 @@ namespace itertools {
 
   namespace base::utils {
 	template<typename... T1, typename... T2, std::size_t... I>
-	constexpr auto weakComparisonImpl(const std::tuple<T1...>& t1, const std::tuple<T2...>& t2, std::index_sequence<I...>) {
+	constexpr auto weakComparisonImpl(std::tuple<T1...> const& t1, std::tuple<T2...> const& t2, std::index_sequence<I...>) {
 		bool result {false};
 		((result = result || std::get<I>(t1) == std::get<I>(t2)) ,...);
 		return result;
 	}
 	template<typename... T1, typename... T2>
-	constexpr auto weakComparison(const std::tuple<T1...>& t1, const std::tuple<T2...>& t2) {
+	constexpr auto weakComparison(std::tuple<T1...> const& t1, std::tuple<T2...> const& t2) {
 		static_assert(sizeof...(T1) == sizeof...(T2));
 		return weakComparisonImpl(t1, t2, std::make_index_sequence<sizeof...(T1)>{});
 	}
