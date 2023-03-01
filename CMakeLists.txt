@@ -5,11 +5,8 @@ project(${PROJECT_NAME}
         DESCRIPTION "Zip in Cpp"
         LANGUAGES CXX)
 
-set(CMAKE_CXX_FLAGS " -Wall -Wextra -Wpedantic -Werror -Wreturn-std-move -Wno-c99-extensions -Wno-missing-field-initializers -Wno-gnu-zero-variadic-macro-arguments -o")
+set(CMAKE_CXX_FLAGS " -Wall -Wextra -Wpedantic -Werror -o")
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS_DEBUG " -fsanitize=undefined -g")
-set(CMAKE_CXX_FLAGS_DEBUG " -fsanitize=address -g -fno-omit-frame-pointer -fno-optimize-sibling-calls")
-set(CMAKE_CXX_FLAGS_DEBUG " -fsanitize=thread -g")
 set(CMAKE_CXX_FLAGS_RELEASE " -O3")
 
 if (APPLE)
