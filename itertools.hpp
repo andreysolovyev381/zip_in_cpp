@@ -76,8 +76,8 @@ namespace itertools {
 	  template<typename Type>
 	  using IteratorTypeSelect = std::conditional_t<
 			  std::is_const_v<std::remove_reference_t<Type>>,
-			  typename std::decay_t<Type>::const_iterator,
-			  typename std::decay_t<Type>::iterator>;
+			  typename std::remove_reference_t<Type>::const_iterator,
+			  typename std::remove_reference_t<Type>::iterator>;
 
   public:
 	  using zip_type = ZipIterator<IteratorTypeSelect<Container>...>;
