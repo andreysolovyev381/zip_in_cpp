@@ -5,9 +5,9 @@ project(${PROJECT_NAME}
         DESCRIPTION "Zip in Cpp"
         LANGUAGES CXX)
 
-set(CMAKE_CXX_FLAGS " -Wall -Wextra -Wpedantic -Werror -o")
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS_RELEASE " -O3")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Werror")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 
 if (APPLE)
     #debug
@@ -26,11 +26,28 @@ endif (APPLE)
 
 find_package(GTest REQUIRED)
 if(GTest_FOUND)
-    message(STATUS "FOUND GTest, including and linking...")
+    message(STATUS " <===> FOUND GTest, including and linking...")
     include_directories(${GTEST_INCLUDE_DIRS})
+    add_executable(${PROJECT_NAME} tests_itertools.cpp)
+    target_compile_options(${PROJECT_NAME}
+            PRIVATE
+            -fsanitize=address -g -fno-omit-frame-pointer -fno-optimize-sibling-calls
+            -fsanitize=undefined -g -fno-omit-frame-pointer
+#            -fsanitize=leak -g
+#            -fsanitize=thread -fPIE -pie -g
+            )
+    target_link_options(${PROJECT_NAME}
+            PRIVATE
+            -fsanitize=address
+            -fsanitize=undefined
+#            -fsanitize=leak
+#            -fsanitize=thread
+            )
+    target_link_libraries(${PROJECT_NAME}
+            GTest::GTest
+            pthread
+            )
 else()
-    message(STATUS "NOT FOUND GTest")
+    message(STATUS " <===> NOT FOUND GTest")
 endif()
 
-add_executable(${PROJECT_NAME} tests_itertools.cpp)
-target_link_libraries(${PROJECT_NAME} ${GTEST_LIBRARIES})
