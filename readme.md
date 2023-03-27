@@ -16,6 +16,10 @@ Pretty much straightforward, see the test file. Here is the most vivid example:
 		ss << i << ' ' << pair.first << ' ' << pair.second << ' ' << ch << '\n';
 	}
 ```
+Works like a charm in 17 and 20.
 
 #### Disclaimer 
 Feel free to use it for your needs at your own risk. No guarantees of any kind is given :)
+
+#### License
+MIT License

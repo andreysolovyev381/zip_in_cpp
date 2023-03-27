@@ -7,13 +7,84 @@
 #include <utility>
 #include <tuple>
 #include <type_traits>
+#ifdef __cpp_concepts
+#include <concepts>
+#endif
+
 
 #ifndef ITERTOOLS_H
 #define ITERTOOLS_H
 
 namespace itertools {
 
+  namespace requirements {
+	/**
+	 * @details
+	 * Requirements to restrict containers only to be used as a serie
+	 * */
+#ifndef __cpp_concepts
+	template<typename Container, typename = void>
+	struct MaybeContainer : std::false_type {};
+
+	template<typename Container>
+	struct MaybeContainer<Container,
+						  std::void_t<
+								  decltype(std::declval<Container>().begin()),
+								  decltype(std::declval<Container>().end())
+						  >
+	> : std::true_type {};
+
+	template<typename Container>
+	constexpr bool isContainer_v() { return MaybeContainer<Container>::value; }
+
+	template<typename Container>
+	using IsContainer = std::enable_if_t<isContainer_v<Container>(), bool>;
+
+	template <typename... Args>
+	constexpr bool areAllContainers_v () {
+		bool result {true};
+		return ((result = result && isContainer_v<Args>()),...);
+	}
+
+	template<typename... MaybeContainer>
+	using AreAllContainers = std::enable_if_t<areAllContainers_v<MaybeContainer...>(), bool>;
+
+
+	template<typename Element>
+	using IsDefaultConstructible = std::enable_if_t<std::is_default_constructible_v<Element>, bool>;
+
+#else
+
+
+	template<typename C>
+  concept IsContainer = requires (C c) {
+	  c.begin();
+	  c.end();
+  };
+
+  template<typename C>
+  concept IsNotContainer = !IsContainer<C>;
+
+  template <IsContainer C>
+  constexpr bool isContainer_v () {return true;}
+
+  template <IsNotContainer C>
+  constexpr bool isContainer_v () {return false;}
+
+  template<typename... MaybeContainer>
+  concept AreAllContainers = requires () {requires ((IsContainer<MaybeContainer>),...);};
+
+
+//  template<typename Element>
+//  using IsDefaultConstructible = std::enable_if_t<std::is_default_constructible_v<Element>, bool>;
+
+#endif
+
+  }//!namespace
+
+
   namespace base::utils {
+
 	template<typename... T1, typename... T2, std::size_t... I>
 	constexpr auto weakComparisonImpl(std::tuple<T1...> const& t1, std::tuple<T2...> const& t2, std::index_sequence<I...>) {
 		bool result {false};
@@ -25,7 +96,7 @@ namespace itertools {
 		static_assert(sizeof...(T1) == sizeof...(T2));
 		return weakComparisonImpl(t1, t2, std::make_index_sequence<sizeof...(T1)>{});
 	}
-  }
+  }//!namespace
 
   template<typename... Iter>
   class ZipIterator {
@@ -34,12 +105,12 @@ namespace itertools {
 	  using AccessTypeFor = typename SomeIter::reference;
 
   public:
-		using iterator_type = ZipIterator;
-		using iterator_category = std::bidirectional_iterator_tag;
-		using value_type = typename std::tuple<AccessTypeFor<Iter>...>;
-		using difference_type = int;
-		using pointer = value_type *;
-		using reference = value_type &;
+	  using iterator_type = ZipIterator;
+	  using iterator_category = std::forward_iterator_tag;
+	  using value_type = typename std::tuple<AccessTypeFor<Iter>...>;
+	  using difference_type = int;
+	  using pointer = value_type *;
+	  using reference = value_type &;
 
 	  ZipIterator() = delete;
 
@@ -102,9 +173,13 @@ namespace itertools {
   };
 
 
-  template<typename... Container>
-  auto zip(Container&&... container) {
-	  return Zipper<Container...> (std::forward<Container>(container)...);
+#ifndef __cpp_concepts
+  template<typename... Containers, requirements::AreAllContainers<Containers...> = true>
+#else
+  template<requirements::AreAllContainers... Containers>
+#endif
+  auto zip(Containers&&... containers) {
+	  return Zipper<Containers...> (std::forward<Containers>(containers)...);
   }
 }//!namespace
 #endif //ITERTOOLS_H
