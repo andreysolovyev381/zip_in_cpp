@@ -1,0 +1,85 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  gcc:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+    - name: Install google test and boost, also install g++-11
+      run: sudo apt-get install libgtest-dev googletest googletest-tools google-mock g++-11
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: CMake Lib release config
+      run: cmake -S . -B release -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_BUILD_TYPE=Release
+    - name: CMake Lib release build
+      run: cmake --build release
+    - name: CMake Lib debug config
+      run: cmake -S . -B debug -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_BUILD_TYPE=Debug
+    - name: CMake Lib debug build
+      run: cmake --build debug
+
+    - name: Run tests
+      run: debug/tests_itertools
+
+  clang:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Install google test and boost, also install clang-15
+        run: sudo apt-get install libgtest-dev googletest googletest-tools google-mock clang-15
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: CMake Lib release config
+        run: cmake -S . -B release -DCMAKE_CXX_COMPILER=clang-15 -DCMAKE_BUILD_TYPE=Release
+      - name: CMake Lib release build
+        run: cmake --build release
+      - name: CMake Lib debug config
+        run: cmake -S . -B debug -DCMAKE_CXX_COMPILER=clang-15 -DCMAKE_BUILD_TYPE=Debug
+      - name: CMake Lib debug build
+        run: cmake --build debug
+
+      - name: Run tests
+        run: debug/tests_itertools
+
+  msvc:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        config:
+          - { name: 'Debug', build_type: 'Debug' }
+          - { name: 'Release', build_type: 'Release' }
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up MSVC
+        uses: microsoft/setup-msbuild@v1.0.2
+      - name: Install Google Test
+        run: |
+          git clone https://github.com/google/googletest.git
+          cd googletest
+          mkdir build
+          cd build
+          cmake ..
+          cmake --build .
+          cd ../..
+          echo "::set-env name=GTEST_ROOT::$(pwd)/googletest"
+          echo "GTEST_ROOT=$(pwd)/googletest" >> $GITHUB_ENV
+      - name: Build
+        run: msbuild /p:Configuration=$BUILD_TYPE
+      - name: Run tests
+        run: ./bin/$BUILD_TYPE/tests_itertools.exe
+        env:
+          GTEST_ROOT: ${{ env.GTEST_ROOT }}
+          BUILD_TYPE: ${{ matrix.config.name }}
