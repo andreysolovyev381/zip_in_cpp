@@ -16,8 +16,13 @@ jobs:
       - name: Install google test and boost, also install g++-11
         run: sudo apt-get install libgtest-dev googletest googletest-tools google-mock g++-11
       - name: Checkout repository
+        with:
+          submodules: recursive
         uses: actions/checkout@v3
-
+      - name: Print env
+        run: |
+          echo github.event.action: ${{ github.event.action }}
+          echo github.event_name: ${{ github.event_name }}
       - name: CMake Lib release config
         run: cmake -S . -B release -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_BUILD_TYPE=Release
       - name: CMake Lib release build
@@ -38,9 +43,13 @@ jobs:
       - name: Install google test and boost, also install clang-15
         run: sudo apt-get install libgtest-dev googletest googletest-tools google-mock clang-15
       - name: Checkout repository
+        with:
+          submodules: recursive
         uses: actions/checkout@v3
-      - name: Checking Repo
-        run: ls -lhaRG
+      - name: Print env
+        run: |
+          echo github.event.action: ${{ github.event.action }}
+          echo github.event_name: ${{ github.event_name }}
       - name: CMake Lib release config
         run: cmake -S . -B release -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Release
       - name: CMake Lib release build
@@ -61,6 +70,8 @@ jobs:
           - { name: 'Release', build_type: 'Release' }
     steps:
       - name: Checkout repository
+        with:
+          submodules: recursive
         uses: actions/checkout@v3
       - name: Save state
         run: echo "ACTIONS_ALLOW_UNSECURE_COMMANDS=true" >> $GITHUB_STATE
