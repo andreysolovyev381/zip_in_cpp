@@ -27,7 +27,7 @@ jobs:
       - name: CMake Lib debug build
         run: cmake --build debug
       - name: Run tests
-        run: ./debug/zip_in_cpp_tests
+        run: debug/zip_in_cpp_tests
 
   clang:
     runs-on: ubuntu-latest
@@ -40,6 +40,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Compiles GTest using Clang
+        run: |
+          cd /usr/src/googletest/googletest
+          sudo mkdir build
+          cd build
+          sudo cmake .. -DBUILD_SHARED_LIBS=ON -DINSTALL_GTEST=ON -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_C_COMPILER=clang-15 -DCMAKE_CXX_COMPILER=clang-15
+          sudo make
+          sudo cp libgtest* /usr/lib/
+          cd ..
+          sudo rm -rf build
+          sudo mkdir /usr/local/lib/googletest
+          sudo ln -s /usr/lib/libgtest.a /usr/local/lib/googletest/libgtest.a
+          sudo ln -s /usr/lib/libgtest_main.a /usr/local/lib/googletest/libgtest_main.a
       - name: CMake Lib release config
         run: cmake -S . -B release -DCMAKE_CXX_COMPILER=clang-15 -DCMAKE_BUILD_TYPE=Release
       - name: CMake Lib release build
@@ -49,7 +62,7 @@ jobs:
       - name: CMake Lib debug build
         run: cmake --build debug
       - name: Run tests
-        run: ./debug/zip_in_cpp_tests
+        run: debug/zip_in_cpp_tests
 
   msvc:
     runs-on: windows-latest
