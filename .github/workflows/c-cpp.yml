@@ -28,13 +28,13 @@ jobs:
         run: cmake --build debug
       - name: List it all
         run: |
-          cd build
-          ls -la
-          cd ../debug
-          ls -la
           cd ..
           ls -la
 
+#          cd build
+#          ls -la
+#          cd ../debug
+#          ls -la
       #    - name: Run tests
       #      run: debug/tests_itertools
       - name: Run tests

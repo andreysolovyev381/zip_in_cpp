@@ -57,22 +57,22 @@ namespace itertools {
 
 
 	template<typename C>
-  concept IsContainer = requires (C c) {
-	  c.begin();
-	  c.end();
-  };
+	concept IsContainer = requires (C c) {
+		c.begin();
+		c.end();
+	};
 
-  template<typename C>
-  concept IsNotContainer = !IsContainer<C>;
+	template<typename C>
+	concept IsNotContainer = !IsContainer<C>;
 
-  template <IsContainer C>
-  constexpr bool isContainer_v () {return true;}
+	template <IsContainer C>
+	constexpr bool isContainer_v () {return true;}
 
-  template <IsNotContainer C>
-  constexpr bool isContainer_v () {return false;}
+	template <IsNotContainer C>
+	constexpr bool isContainer_v () {return false;}
 
-  template<typename... MaybeContainer>
-  concept AreAllContainers = requires () {requires ((IsContainer<MaybeContainer>),...);};
+	template<typename... MaybeContainer>
+	concept AreAllContainers = requires () {requires ((IsContainer<MaybeContainer>),...);};
 
 
 //  template<typename Element>
@@ -150,7 +150,7 @@ namespace itertools {
 	  bool operator!=(ZipIterator const& other) const {
 		  return !(*this == other);
 	  }
-	  value_type operator*() {
+	  reference operator*() {
 		  return makeRefs();
 	  }
 	  pointer operator->() { //it is supposed to survive just a drill-down
@@ -174,7 +174,7 @@ namespace itertools {
   private:
 
 	  /**
-	   * @brief
+	   * @details
 	   * This seemingly innocent iterator type selection serves
 	   * as a guard - no Type without an iterator can pass this.
 	   * */
