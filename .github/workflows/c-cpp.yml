@@ -30,9 +30,8 @@ jobs:
         run: |
           cd ..
           ls -la
-
-#          cd build
-#          ls -la
+          cd zip_in_cpp
+          ls -la
 #          cd ../debug
 #          ls -la
       #    - name: Run tests
