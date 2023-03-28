@@ -26,15 +26,8 @@ jobs:
         run: cmake -S . -B debug -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_BUILD_TYPE=Debug
       - name: CMake Lib debug build
         run: cmake --build debug
-      - name: List it all
-        run: |
-          ls -la
-          cd debug
-          ls -la
-          cd zip_in_cpp
-          ls -la
       - name: Run tests
-        run: ./debug/tests_itertools
+        run: ./debug/zip_in_cpp_tests
 
   clang:
     runs-on: ubuntu-latest
@@ -56,7 +49,7 @@ jobs:
       - name: CMake Lib debug build
         run: cmake --build debug
       - name: Run tests
-        run: zip_in_cpp/debug/tests_itertools
+        run: ./debug/zip_in_cpp_tests
 
   msvc:
     runs-on: windows-latest
@@ -91,7 +84,7 @@ jobs:
       - name: Build
         run: msbuild /p:Configuration=$BUILD_TYPE
       - name: Run tests
-        run: ./bin/$BUILD_TYPE/tests_itertools.exe
+        run: ./bin/$BUILD_TYPE/zip_in_cpp_tests.exe
         env:
           GTEST_ROOT: ${{ env.GTEST_ROOT }}
           BUILD_TYPE: ${{ matrix.config.name }}
