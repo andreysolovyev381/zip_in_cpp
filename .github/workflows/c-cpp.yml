@@ -45,7 +45,7 @@ jobs:
           sudo mkdir build
           cd build
           sudo cmake .. -DBUILD_SHARED_LIBS=ON -DINSTALL_GTEST=ON -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_C_COMPILER=clang-15 -DCMAKE_CXX_COMPILER=clang-15
-          cmake --build .
+          sudo cmake --build .
           sudo cmake --install .          
           ls -la
           sudo ldconfig
