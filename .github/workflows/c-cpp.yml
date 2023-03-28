@@ -13,24 +13,32 @@ jobs:
       run:
         shell: bash
     steps:
-    - name: Install google test and boost, also install g++-11
-      run: sudo apt-get install libgtest-dev googletest googletest-tools google-mock g++-11
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Install google test and boost, also install g++-11
+        run: sudo apt-get install libgtest-dev googletest googletest-tools google-mock g++-11
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: CMake Lib release config
-      run: cmake -S . -B release -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_BUILD_TYPE=Release
-    - name: CMake Lib release build
-      run: cmake --build release
-    - name: CMake Lib debug config
-      run: cmake -S . -B debug -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_BUILD_TYPE=Debug
-    - name: CMake Lib debug build
-      run: cmake --build debug
+      - name: CMake Lib release config
+        run: cmake -S . -B release -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_BUILD_TYPE=Release
+      - name: CMake Lib release build
+        run: cmake --build release
+      - name: CMake Lib debug config
+        run: cmake -S . -B debug -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_BUILD_TYPE=Debug
+      - name: CMake Lib debug build
+        run: cmake --build debug
+      - name: List it all
+        run: |
+          cd build
+          ls -la
+          cd ../debug
+          ls -la
+          cd ..
+          ls -la
 
-#    - name: Run tests
-#      run: debug/tests_itertools
-    - name: Run tests
-      run: tests_itertools
+      #    - name: Run tests
+      #      run: debug/tests_itertools
+      - name: Run tests
+        run: tests_itertools
 
   clang:
     runs-on: ubuntu-latest
@@ -52,8 +60,8 @@ jobs:
       - name: CMake Lib debug build
         run: cmake --build debug
 
-#      - name: Run tests
-#        run: debug/tests_itertools
+      #      - name: Run tests
+      #        run: debug/tests_itertools
       - name: Run tests
         run: tests_itertools
 
