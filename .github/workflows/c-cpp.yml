@@ -74,9 +74,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Set the value to allow GITHUB_ENV
-        run: |
-          echo "ACTIONS_ALLOW_UNSECURE_COMMANDS=true" >> $GITHUB_ENV
+      - name: Save state
+        run: echo "ACTIONS_ALLOW_UNSECURE_COMMANDS=true" >> $GITHUB_STATE
       - name: Set up MSVC
         uses: microsoft/setup-msbuild@v1.0.2
       - name: Install Google Test
