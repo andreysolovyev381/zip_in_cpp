@@ -53,6 +53,8 @@ jobs:
           sudo ln -s /usr/lib/libgtest_main.a /usr/local/lib/googletest/libgtest_main.a
       - name: Checkout repository
         uses: actions/checkout@v3
+      - name: Checking Repo
+        run: ls -lhaRG
       - name: CMake Lib release config
         run: cmake -S . -B release -DCMAKE_CXX_COMPILER=clang-15 -DCMAKE_BUILD_TYPE=Release
       - name: CMake Lib release build
