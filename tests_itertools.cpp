@@ -131,9 +131,10 @@ TEST(BasicsItertools, NonContainers) {
 }
 
 TEST(BasicsItertools, BadIteratorCategory) {
-	auto osit = std::ostream_iterator<int>{std::cout};
+	[[maybe_unused]] auto osit = std::ostream_iterator<int>{std::cout};
 	[[maybe_unused]] std::vector<int> v{ 1,2,3,4,5 };
-	auto wit = itertools::zip(osit, v.begin());
+//	auto wit = itertools::zip(osit, v.begin());
+	//todo: add compile-time test
 }
 int main() {
 	testing::InitGoogleTest();
