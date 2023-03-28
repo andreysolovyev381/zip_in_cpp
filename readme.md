@@ -29,3 +29,19 @@ Feel free to use it for your needs at your own risk. No guarantees of any kind i
 
 #### License
 MIT License
+
+
+      - name: Cooking GoogleTest lib
+        run: |
+          cd /usr/src/googletest/googletest
+          sudo mkdir build
+          cd build
+          sudo cmake .. -DBUILD_SHARED_LIBS=ON -DINSTALL_GTEST=ON -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+          sudo cmake --build .
+          cd lib
+          sudo cp libgtest* /usr/lib/
+          cd ../../
+          sudo rm -rf build
+          sudo mkdir /usr/local/lib/googletest
+          sudo ln -s /usr/lib/libgtest.a /usr/local/lib/googletest/libgtest.a
+          sudo ln -s /usr/lib/libgtest_main.a /usr/local/lib/googletest/libgtest_main.a
