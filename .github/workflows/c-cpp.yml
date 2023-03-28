@@ -34,7 +34,7 @@ jobs:
           cd debug
           ls -la
       - name: Run tests
-        run: zip_in_cpp/debug/tests_itertools
+        run: /debug/tests_itertools
 
   clang:
     runs-on: ubuntu-latest
