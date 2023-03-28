@@ -42,7 +42,7 @@ jobs:
           cd /usr/src/googletest/googletest
           sudo mkdir build
           cd build
-          sudo cmake .. -DBUILD_SHARED_LIBS=ON -DINSTALL_GTEST=ON -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_C_COMPILER=clang-15 -DCMAKE_CXX_COMPILER=clang++-15
+          sudo cmake .. -DBUILD_SHARED_LIBS=ON -DINSTALL_GTEST=ON -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
           sudo cmake --build .
           cd lib
           sudo cp libgtest* /usr/lib/
@@ -56,11 +56,11 @@ jobs:
       - name: Checking Repo
         run: ls -lhaRG
       - name: CMake Lib release config
-        run: cmake -S . -B release -DCMAKE_CXX_COMPILER=clang++-15 -DCMAKE_BUILD_TYPE=Release
+        run: cmake -S . -B release -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Release
       - name: CMake Lib release build
         run: cmake --build release
       - name: CMake Lib debug config
-        run: cmake -S . -B debug -DCMAKE_CXX_COMPILER=clang++-15 -DCMAKE_BUILD_TYPE=Debug
+        run: cmake -S . -B debug -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Debug
       - name: CMake Lib debug build
         run: cmake --build debug
       - name: Run tests
