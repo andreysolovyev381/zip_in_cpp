@@ -31,6 +31,8 @@ jobs:
           ls -la
           cd debug
           ls -la
+          cd zip_in_cpp
+          ls -la
       - name: Run tests
         run: ./debug/tests_itertools
 
