@@ -39,14 +39,12 @@ jobs:
         run: sudo apt-get install libgtest-dev googletest googletest-tools google-mock clang-15
       - name: Checkout repository
         uses: actions/checkout@v3
-
       - name: Compiles GTest using Clang
         run: |
           cd /usr/src/googletest/googletest
           sudo mkdir build
           cd build
           sudo cmake .. -DBUILD_SHARED_LIBS=ON -DINSTALL_GTEST=ON -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_C_COMPILER=clang-15 -DCMAKE_CXX_COMPILER=clang-15
-
           cmake --build .
           sudo cmake --install .          
           ls -la
