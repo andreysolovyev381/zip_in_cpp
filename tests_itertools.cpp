@@ -86,6 +86,24 @@ TEST(BasicsItertools, OneContainer) {
 )"};
 	ASSERT_EQ(ss.str(), check);
 }
+TEST(BasicsItertools, VectorBool) {
+	std::vector<bool> v{ 1,1,0,1,0 };
+	std::string s { "abcdefghhlk" };
+
+	std::stringstream ss;
+	ss << std::boolalpha;
+
+	for (auto const& [b, c] : itertools::zip(v)) {
+		ss << b << ' ' c << '\n';
+	}
+	std::string check {R"(true a
+true b
+false c
+true d
+false e
+)"};
+	ASSERT_EQ(ss.str(), check);
+}
 TEST(BasicsItertools, TwoContainers_OneEmpty) {
 	std::vector<int> v{ 1,2,3,4,5 };
 	std::string s;

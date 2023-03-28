@@ -82,35 +82,39 @@ namespace itertools {
 
   }//!namespace
 
-
-  namespace base::utils {
-
-	template<typename... T1, typename... T2, std::size_t... I>
-	constexpr auto weakComparisonImpl(std::tuple<T1...> const& t1, std::tuple<T2...> const& t2, std::index_sequence<I...>) {
-		bool result {false};
-		((result = result || std::get<I>(t1) == std::get<I>(t2)) ,...);
-		return result;
-	}
-	template<typename... T1, typename... T2>
-	constexpr auto weakComparison(std::tuple<T1...> const& t1, std::tuple<T2...> const& t2) {
-		static_assert(sizeof...(T1) == sizeof...(T2));
-		return weakComparisonImpl(t1, t2, std::make_index_sequence<sizeof...(T1)>{});
-	}
-  }//!namespace
-
   template<typename... Iter>
   class ZipIterator {
   private:
 	  template<typename SomeIter>
-	  using AccessTypeFor = typename SomeIter::reference;
+	  using ValueTypeFor = typename SomeIter::value_type;
+
+	  template<typename SomeIter>
+	  using ReferenceTypeFor = typename SomeIter::reference;
+
+	  template<typename SomeIter>
+	  using DifferenceTypeFor = typename SomeIter::difference_type;
+
+	  /**
+	   * @details
+	   * It is taken from O'Dwyer blog's post, see there some explanation.\n\n
+	   * https://quuxplusone.github.io/blog/2019/02/06/arrow-proxy/ \n\n
+	   * But basically, this is requried to have a proper \n
+	   * operator -> () \n
+	   * thing for this iterator.\n\n
+	   * */
+	  template <typename Reference>
+	  struct arrowProxy {
+		  Reference R;
+		  Reference *operator->() { return &R; } // non const
+	  };
 
   public:
-	  using iterator_type = ZipIterator;
-	  using iterator_category = std::forward_iterator_tag;
-	  using value_type = typename std::tuple<AccessTypeFor<Iter>...>;
-	  using difference_type = int;
-	  using pointer = value_type *;
-	  using reference = value_type &;
+	  using iterator_type = ZipIterator<Iter...>;
+	  using iterator_category = std::bidirectional_iterator_tag;
+	  using value_type = typename std::tuple<ValueTypeFor<Iter>...>;
+	  using reference = typename std::tuple<ReferenceTypeFor<Iter>...>;
+	  using pointer = arrowProxy<reference>;
+	  using difference_type = typename std::tuple<DifferenceTypeFor<Iter>...>;
 
 	  ZipIterator() = delete;
 
@@ -121,22 +125,43 @@ namespace itertools {
 		  std::apply([](Iter&... iter){ ((++iter), ...); }, iterators);
 		  return *this;
 	  }
-
-	  bool operator==(ZipIterator const& other) const {
-		  return base::utils::weakComparison(this->iterators, other.iterators);
+	  ZipIterator& operator--() {
+		  std::apply([](Iter&... iter){ ((--iter), ...); }, iterators);
+		  return *this;
 	  }
+
+	  pointer operator->() const { return pointer{makeRefs()}; } //it is supposed to survive a drill down
+	  reference operator*() const { return makeRefs(); }
+	  value_type operator*() { return makeVals(); }
+
+	  bool operator==(ZipIterator const& other) const { return weakComparison(this->iterators, other.iterators); }
 	  bool operator!=(ZipIterator const& other) const { return !(*this == other); }
-	  value_type operator*() { return makeRefs(); }
 
   private:
 	  std::tuple<Iter...> iterators;
 
-	  template <std::size_t... I>
-	  auto makeRefsImpl (std::index_sequence<I...>) {
-		  return std::tuple<AccessTypeFor<Iter>...> ({ std::get<I>(iterators).operator*()... });
+	  template <typename RequiredType, std::size_t... I>
+	  auto makeRequiredTypeImpl (std::index_sequence<I...>) {
+		  return RequiredType ({ std::get<I>(iterators)... });
 	  }
+	  auto makeVals () {
+		  return makeRequiredTypeImpl<value_type> (std::make_index_sequence<sizeof...(Iter)>{});
+	  }
+
 	  auto makeRefs () {
-		  return makeRefsImpl (std::make_index_sequence<sizeof...(Iter)>{});
+		  return makeRequiredTypeImpl<reference> (std::make_index_sequence<sizeof...(Iter)>{});
+	  }
+
+	  template<typename... T1, typename... T2, std::size_t... I>
+	  constexpr auto weakComparisonImpl(std::tuple<T1...> const& t1, std::tuple<T2...> const& t2, std::index_sequence<I...>) {
+		  bool result {false};
+		  ((result = result || std::get<I>(t1) == std::get<I>(t2)) ,...);
+		  return result;
+	  }
+	  template<typename... T1, typename... T2>
+	  constexpr auto weakComparison(std::tuple<T1...> const& t1, std::tuple<T2...> const& t2) {
+		  static_assert(sizeof...(T1) == sizeof...(T2));
+		  return weakComparisonImpl(t1, t2, std::make_index_sequence<sizeof...(T1)>{});
 	  }
   };
 
