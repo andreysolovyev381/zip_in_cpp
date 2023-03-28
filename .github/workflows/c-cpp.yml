@@ -46,13 +46,19 @@ jobs:
           sudo mkdir build
           cd build
           sudo cmake .. -DBUILD_SHARED_LIBS=ON -DINSTALL_GTEST=ON -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_C_COMPILER=clang-15 -DCMAKE_CXX_COMPILER=clang-15
-          sudo make
-          sudo cp libgtest* /usr/lib/
-          cd ..
-          sudo rm -rf build
-          sudo mkdir /usr/local/lib/googletest
-          sudo ln -s /usr/lib/libgtest.a /usr/local/lib/googletest/libgtest.a
-          sudo ln -s /usr/lib/libgtest_main.a /usr/local/lib/googletest/libgtest_main.a
+
+          cmake --build .
+          sudo cmake --install .          
+          ls -la
+#          sudo make -j8
+#          sudo make install
+          sudo ldconfig
+#          sudo cp libgtest* /usr/lib/
+#          cd ..
+#          sudo rm -rf build
+#          sudo mkdir /usr/local/lib/googletest
+#          sudo ln -s /usr/lib/libgtest.a /usr/local/lib/googletest/libgtest.a
+#          sudo ln -s /usr/lib/libgtest_main.a /usr/local/lib/googletest/libgtest_main.a
       - name: CMake Lib release config
         run: cmake -S . -B release -DCMAKE_CXX_COMPILER=clang-15 -DCMAKE_BUILD_TYPE=Release
       - name: CMake Lib release build
