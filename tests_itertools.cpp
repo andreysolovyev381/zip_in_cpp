@@ -121,16 +121,20 @@ TEST(BasicsItertools, TwoContainers_OneEmpty) {
 	ASSERT_EQ(ss.str(), check);
 }
 TEST(BasicsItertools, NonContainers) {
-
 	struct NotOkContainer { int value {42}; };
 	[[maybe_unused]] NotOkContainer not_ok;
 
 	[[maybe_unused]] std::vector<int> v{ 1,2,3,4,5 };
 
-//	auto z = iterators::zip(v, not_ok); //doesn't compile
+//	auto z = itertools::zip(v, not_ok); //doesn't compile
 	//todo: add compile-time test
 }
 
+TEST(BasicsItertools, BadIteratorCategory) {
+	auto osit = std::ostream_iterator<int>{std::cout};
+	[[maybe_unused]] std::vector<int> v{ 1,2,3,4,5 };
+	auto wit = itertools::zip(osit, v.begin());
+}
 int main() {
 	testing::InitGoogleTest();
 	testing::GTEST_FLAG(color) = "yes";

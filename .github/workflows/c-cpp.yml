@@ -28,7 +28,8 @@ jobs:
         run: cmake --build debug
       - name: List it all
         run: |
-          cd zip_in_cpp
+          ls -la
+          cd ./zip_in_cpp
           ls -la
           cd debug
           ls -la
