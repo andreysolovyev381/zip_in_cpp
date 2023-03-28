@@ -39,8 +39,7 @@ jobs:
         run: sudo apt-get install libgtest-dev googletest googletest-tools google-mock clang-15
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: Compiles GTest using Clang
+      - name: Cooking GoogleTest lib
         run: |
           cd /usr/src/googletest/googletest
           sudo mkdir build
