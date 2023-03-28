@@ -46,7 +46,11 @@ jobs:
           cd build
           sudo cmake .. -DBUILD_SHARED_LIBS=ON -DINSTALL_GTEST=ON -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_C_COMPILER=clang-15 -DCMAKE_CXX_COMPILER=clang-15
           sudo cmake --build .
-          ls -ls
+          ls -lhaRG
+          cd bin
+          ls -lhaRG
+          cd ../lib
+          ls -lhaRG          
           sudo cp libgtest* /usr/lib/
           cd ..
           sudo rm -rf build
