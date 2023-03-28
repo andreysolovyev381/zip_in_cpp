@@ -26,18 +26,8 @@ jobs:
         run: cmake -S . -B debug -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_BUILD_TYPE=Debug
       - name: CMake Lib debug build
         run: cmake --build debug
-      - name: List it all
-        run: |
-          cd ..
-          ls -la
-          cd zip_in_cpp
-          ls -la
-#          cd ../debug
-#          ls -la
-      #    - name: Run tests
-      #      run: debug/tests_itertools
       - name: Run tests
-        run: tests_itertools
+        run: zip_in_cpp/debug/tests_itertools
 
   clang:
     runs-on: ubuntu-latest
@@ -58,11 +48,8 @@ jobs:
         run: cmake -S . -B debug -DCMAKE_CXX_COMPILER=clang-15 -DCMAKE_BUILD_TYPE=Debug
       - name: CMake Lib debug build
         run: cmake --build debug
-
-      #      - name: Run tests
-      #        run: debug/tests_itertools
       - name: Run tests
-        run: tests_itertools
+        run: zip_in_cpp/debug/tests_itertools
 
   msvc:
     runs-on: windows-latest
@@ -87,6 +74,13 @@ jobs:
           cd ../..
           echo "::set-env name=GTEST_ROOT::$(pwd)/googletest"
           echo "GTEST_ROOT=$(pwd)/googletest" >> $GITHUB_ENV
+
+      - name: List it all
+        run: |
+          dir
+          cd ./bin/
+          dir
+
       - name: Build
         run: msbuild /p:Configuration=$BUILD_TYPE
       - name: Run tests
