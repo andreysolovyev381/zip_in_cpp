@@ -27,8 +27,9 @@ if (APPLE)
     endif()
 endif (APPLE)
 
+find_package(GTest REQUIRED)
+
 if (NOT WIN32)
-    find_package(GTest REQUIRED)
     if(GTest_FOUND)
         message(STATUS " <===> FOUND GTest, including and linking...")
         include_directories(${GTEST_INCLUDE_DIRS})
