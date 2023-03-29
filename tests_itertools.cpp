@@ -29,6 +29,38 @@ e 5
 )"};
 	ASSERT_EQ(ss.str(), check);
 }
+TEST(BasicsItertools, DifferentIterTypes) {
+	using namespace std::string_literals;
+
+	struct TestStruct {
+		std::map<int, std::string> const m {
+				{1, "one"s}, {2, "two"s}, {3, "three"s}, {4, "four"s}, {5, "five"s},
+		};
+		auto begin() const { return m.cbegin(); }
+		auto end() const { return m.cend(); }
+	};
+	TestStruct test_struct;
+	std::vector<int> v{ 1,2,3,4,5 };
+	std::string s { "abcdefghlk" };
+
+	auto begin = itertools::zip(v.begin(), s.crbegin(), test_struct.begin());
+	auto end = itertools::zip(v.end(), s.crend(), test_struct.end());
+
+	std::stringstream ss;
+
+	for (auto itb = begin, ite = end; itb != ite; ++itb ) {
+		auto const &[normal, const_reverse, const_normal] = *itb;
+		auto const &[i, c] = const_normal;
+		ss << normal << ' ' << const_reverse << ' ' << i << ' ' << c << '\n';
+	}
+	std::string check {R"(1 k 1 one
+2 l 2 two
+3 h 3 three
+4 g 4 four
+5 f 5 five
+)"};
+	ASSERT_EQ(ss.str(), check);
+}
 TEST(BasicsItertools, Vector_Map) {
 	using namespace std::string_literals;
 	std::vector<int> v{ 1,2,3,4,5 };
@@ -123,17 +155,6 @@ TEST(BasicsItertools, TwoContainers_OneEmpty) {
 	std::string check;
 	ASSERT_EQ(ss.str(), check);
 }
-
-TEST(BasicsItertools, DifferentIterTypes) {
-	std::vector<int> v{ 1,2,3,4,5 };
-	std::string s;
-
-	//regular_iterator
-	//const
-	//reverse
-	//const_reverse
-}
-
 
 #ifdef WRONG_ITERATOR_COMPILE_FAILURE
 TEST(BasicsItertools, NonContainers) {

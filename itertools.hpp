@@ -97,11 +97,15 @@ namespace itertools {
 	  reference operator*() {
 		  return makeRefs();
 	  }
+	  reference operator*() const {
+		  return makeRefs();
+	  }
 	  pointer operator->() { //it is supposed to survive just a drill-down
 		  return pointer{makeRefs()};
 	  }
 
   private:
+
 	  std::tuple<Iter...> iterators;
 
 	  template <std::size_t... I>
@@ -179,33 +183,5 @@ namespace itertools {
 	  return ZipIterator<Iterators...> (std::forward<Iterators>(iterators)...);
   }
 
-
 }//!namespace
 #endif //ITERTOOLS_H
-
-/*
-	  template <typename Input>
-	  constexpr auto getIterator (Input&& input) {
-		  using namespace std::string_literals;
-
-		  if constexpr (culib::requirements::isIterator_v<Input>()) {
-			  return std::forward<Input>(input);
-		  }
-		  else if constexpr (culib::requirements::isContainer_v<Input>()) {
-			  if constexpr (std::is_const_v<std::remove_reference_t<Input>>){
-				  return input.cbegin();
-			  } else {
-				  return input.begin();
-			  }
-		  }
-		  else  {
-			  throw std::invalid_argument("Can't produce an iterator from "s + typeid(Input).name());
-		  }
-	  }
-
-
-	  auto getIterators () {
-
-	  }
-
- */
