@@ -123,24 +123,35 @@ TEST(BasicsItertools, TwoContainers_OneEmpty) {
 	std::string check;
 	ASSERT_EQ(ss.str(), check);
 }
+
+TEST(BasicsItertools, DifferentIterTypes) {
+	std::vector<int> v{ 1,2,3,4,5 };
+	std::string s;
+
+	//regular_iterator
+	//const
+	//reverse
+	//const_reverse
+}
+
+
+#ifdef WRONG_ITERATOR_COMPILE_FAILURE
 TEST(BasicsItertools, NonContainers) {
 	struct NotOkContainer { int value {42}; };
 	[[maybe_unused]] NotOkContainer not_ok;
 
 	[[maybe_unused]] std::vector<int> v{ 1,2,3,4,5 };
 
-#ifdef WRONG_ITERATOR_COMPILE_FAILURE
 	auto z = itertools::zip(v, not_ok);
-#endif
 }
 
 TEST(BasicsItertools, BadIteratorCategory) {
 	[[maybe_unused]] auto osit = std::ostream_iterator<int>{std::cout};
 	[[maybe_unused]] std::vector<int> v{ 1,2,3,4,5 };
-#ifdef WRONG_ITERATOR_COMPILE_FAILURE
 	auto wit = itertools::zip(osit, v.begin());
-#endif
 }
+#endif
+
 int main() {
 	testing::InitGoogleTest();
 	testing::GTEST_FLAG(color) = "yes";

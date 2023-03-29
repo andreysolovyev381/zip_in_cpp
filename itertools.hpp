@@ -4,85 +4,19 @@
 
 #pragma once
 
+#include "types_requirements/container.h"
+#include "types_requirements/iterators.h"
+
 #include <utility>
 #include <tuple>
 #include <type_traits>
-#ifdef __cpp_concepts
-#include <concepts>
-#endif
+#include <stdexcept>
+#include <string>
 
 #ifndef ITERTOOLS_H
 #define ITERTOOLS_H
 
 namespace itertools {
-
-  namespace requirements {
-	/**
-	 * @details
-	 * Requirements to restrict containers only to be used as a serie
-	 * */
-#ifndef __cpp_concepts
-	template<typename Container, typename = void>
-	struct MaybeContainer : std::false_type {};
-
-	template<typename Container>
-	struct MaybeContainer<Container,
-						  std::void_t<
-								  decltype(std::declval<Container>().begin()),
-								  decltype(std::declval<Container>().end())
-						  >
-	> : std::true_type {};
-
-	template<typename Container>
-	constexpr bool isContainer_v() { return MaybeContainer<Container>::value; }
-
-	template<typename Container>
-	using IsContainer = std::enable_if_t<isContainer_v<Container>(), bool>;
-
-	template <typename... Args>
-	constexpr bool areAllContainers_v () {
-		bool result {true};
-		return ((result = result && isContainer_v<Args>()),...);
-	}
-
-	template<typename... MaybeContainer>
-	using AreAllContainers = std::enable_if_t<areAllContainers_v<MaybeContainer...>(), bool>;
-
-	template<typename... MaybeContainer>
-	using NotAreAllContainers = std::enable_if_t<!areAllContainers_v<MaybeContainer...>(), bool>;
-
-
-	template<typename Element>
-	using IsDefaultConstructible = std::enable_if_t<std::is_default_constructible_v<Element>, bool>;
-
-#else
-
-
-	template<typename C>
-	concept IsContainer = requires (C c) {
-		c.begin();
-		c.end();
-	};
-
-	template<typename C>
-	concept IsNotContainer = !IsContainer<C>;
-
-	template <IsContainer C>
-	constexpr bool isContainer_v () {return true;}
-
-	template <IsNotContainer C>
-	constexpr bool isContainer_v () {return false;}
-
-	template<typename... MaybeContainer>
-	concept AreAllContainers = requires () {requires ((IsContainer<MaybeContainer>),...);};
-
-
-//  template<typename Element>
-//  using IsDefaultConstructible = std::enable_if_t<std::is_default_constructible_v<Element>, bool>;
-
-#endif
-
-  }//!namespace
 
   namespace base::utils {
 	template<typename... T1, typename... T2, std::size_t... I>
@@ -98,7 +32,12 @@ namespace itertools {
 	}
   }
 
+
+#ifndef __cpp_concepts
   template<typename... Iter>
+#else
+  template<culib::requirements::AreAllIterators ...Iter>
+#endif
   class ZipIterator {
   private:
 
@@ -135,6 +74,9 @@ namespace itertools {
 
 	  ZipIterator() = delete;
 
+#ifndef __cpp_concepts
+	  template<culib::requirements::AreAllIterators<Iter...> = true>
+#endif
 	  explicit
 	  ZipIterator(Iter... iter) :iterators (std::make_tuple(iter...))
 	  {}
@@ -171,64 +113,31 @@ namespace itertools {
 	  }
   };
 
-  template<typename... Container>
+  template<typename... Inputs>
   class Zipper {
   private:
 
 	  /**
 	   * @details
-	   * This seemingly innocent iterator type selection serves
-	   * as a guard - no Type without an iterator can pass this.
+	   * This seemingly innocent iterator type selection serves\n
+	   * as a guard - no Type without an iterator can pass this.\n
+	   * \n
 	   * */
-	  template<typename Type>
+	  template<typename Input>
 	  using IteratorTypeSelect = std::conditional_t<
-			  std::is_const_v<std::remove_reference_t<Type>>,
-			  typename std::remove_reference_t<Type>::const_iterator,
-			  typename std::remove_reference_t<Type>::iterator>;
-
-//#ifndef __cpp_concepts
-//	  template<typename Type, requirements::IsContainer<Type> = true>
-//#else
-//	  template<typename Type>
-//	  requirements::IsContainer<Type>  && requirements::IsNotIterator<Type>
-//#endif
-//	struct IteratorTypeSelector {
-//		using iter_type = std::conditional_t<
-//				std::is_const_v<std::remove_reference_t<Type>>,
-//				typename std::remove_reference_t<Type>::const_iterator,
-//				typename std::remove_reference_t<Type>::iterator>;
-//	};
-//
-//#ifndef __cpp_concepts
-//	  template<typename Type, requirements::IsIterator<Type> = true>
-//#else
-//	  template<typename Type>
-//		requires requirements::IsNotContainer<Type> && requirements::IsIterator<Type>
-//#endif
-//	  struct IteratorTypeSelector {
-//		  using iter_type = std::conditional_t<
-//				  std::is_const_v<std::remove_reference_t<Type>>,
-//				  typename std::remove_reference_t<Type>::const_iterator,
-//				  typename std::remove_reference_t<Type>::iterator>;
-//	  };
-//
-//
-//	  template<typename Type>
-//	  using IteratorTypeSelect = std::conditional_t<
-//			  requirements::isContainer_v<Type>(),
-//			  ContainerIteratorTypeSelect<Type>,
-//	  void>;
-
+			  std::is_const_v<std::remove_reference_t<Input>>,
+			  typename std::remove_reference_t<Input>::const_iterator,
+			  typename std::remove_reference_t<Input>::iterator>;
 
   public:
-	  using zip_type = ZipIterator<IteratorTypeSelect<Container>...>;
+	  using zip_type = ZipIterator<IteratorTypeSelect<Inputs>...>;
 
 	  Zipper() = delete;
 
 	  explicit
-	  Zipper(Container&&... containers)
-			  : begin_ (containers.begin()...)
-			  , end_ (containers.end()...)
+	  Zipper(Inputs&&... inputs)
+			  : begin_ (inputs.begin()...)
+			  , end_ (inputs.end()...)
 	  {}
 
 	  zip_type begin() const { return begin_ ; }
@@ -237,23 +146,66 @@ namespace itertools {
 	  zip_type begin_, end_;
   };
 
-
+  /**
+   * @details
+   * Considering all the options, there should be at least a pair\n
+   * of iterators to provide a valid range.\n\n
+   * So all of the inputs should satisfy the requirements to have\n
+   * both .begin() and end(), therefore each argument is, or  \n
+   * should be, a container.\n
+   *
+   * */
 
 #ifndef __cpp_concepts
-  template<typename... Containers, requirements::AreAllContainers<Containers...> = true>
+  template<typename... Containers, culib::requirements::AreAllContainers<Containers...> = true>
 #else
-  template<requirements::AreAllContainers... Containers>
+  template<culib::requirements::AreAllContainers... Containers>
 #endif
   auto zip(Containers&&... containers) {
 	  return Zipper<Containers...> (std::forward<Containers>(containers)...);
   }
+  /**
+   * @details
+   * Just a ZipIterator will be provided from here.\n
+   *
+   * */
 
-
-  //todo: add iterators requirements
-  template<typename... Iters>
-  auto zip(Iters&&... iters) {
-	  return Zipper<Iters...> (std::forward<Iters>(iters)...);
+#ifndef __cpp_concepts
+  template<typename... Iterators, culib::requirements::AreAllIterators<Iterators...> = true>
+#else
+  template<culib::requirements::AreAllIterators... Iterators>
+#endif
+  auto zip(Iterators&&... iterators) {
+	  return ZipIterator<Iterators...> (std::forward<Iterators>(iterators)...);
   }
+
 
 }//!namespace
 #endif //ITERTOOLS_H
+
+/*
+	  template <typename Input>
+	  constexpr auto getIterator (Input&& input) {
+		  using namespace std::string_literals;
+
+		  if constexpr (culib::requirements::isIterator_v<Input>()) {
+			  return std::forward<Input>(input);
+		  }
+		  else if constexpr (culib::requirements::isContainer_v<Input>()) {
+			  if constexpr (std::is_const_v<std::remove_reference_t<Input>>){
+				  return input.cbegin();
+			  } else {
+				  return input.begin();
+			  }
+		  }
+		  else  {
+			  throw std::invalid_argument("Can't produce an iterator from "s + typeid(Input).name());
+		  }
+	  }
+
+
+	  auto getIterators () {
+
+	  }
+
+ */
