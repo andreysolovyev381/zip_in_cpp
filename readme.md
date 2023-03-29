@@ -33,15 +33,16 @@ Another example, if to zip iterators, not containers
 	auto end = itertools::zip(v.cend(), s.crend(), test_struct.end());
 
 	for (auto itb = begin, ite = end; itb != ite; ++itb ) {
-		auto const &[normal, const_reverse, const_normal] = *itb;
+		auto const &[normal, const_reverse, const_normal] = itb;
 		auto const &[i, c] = const_normal;
 		std::cout << normal << ' ' << const_reverse << ' ' << i << ' ' << c << '\n';
 	}
 
 ```
 
-### Standard
-Works like a charm in 17 and 20.
+### Standard and Compilers
+Works like a charm in 17 and 20. 
+Is compiled by gcc, clang for Linux and something for Windows (thanks to Github Actions).
 
 ### Dependencies
 Header only, STL only. 

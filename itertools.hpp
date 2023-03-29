@@ -50,6 +50,9 @@ namespace itertools {
 	  template<typename SomeIter>
 	  using DifferenceTypeFor = typename SomeIter::difference_type;
 
+	  template<typename SomeIter>
+	  using IteratorCategoryFor = typename std::iterator_traits<SomeIter>::iterator_category;
+
 	  /**
  * @details
  * It is taken from O'Dwyer blog's post, see there some explanation.\n\n
@@ -66,11 +69,11 @@ namespace itertools {
 
   public:
 	  using iterator_type = ZipIterator<Iterators...>;
-	  using iterator_category = std::forward_iterator_tag;
+	  using iterator_category = std::common_type_t<IteratorCategoryFor<Iterators>...>;
 	  using value_type = typename std::tuple<ValueTypeFor<Iterators>...>;
 	  using reference = typename std::tuple<ReferenceTypeFor<Iterators>...>;
-	  using difference_type = typename std::tuple<DifferenceTypeFor<Iterators>...>;
 	  using pointer = arrowProxy<reference>;
+	  using difference_type = std::common_type_t<DifferenceTypeFor<Iterators>...>;
 
 	  ZipIterator() = delete;
 
@@ -80,14 +83,24 @@ namespace itertools {
 	  explicit
 	  ZipIterator(Iterators... iters) :iterators (std::make_tuple(iters...))
 	  {}
-	  ZipIterator& operator++() {
+	  ZipIterator& operator++() & {
 		  std::apply([](Iterators&... iter){ ((++iter), ...); }, iterators);
 		  return *this;
 	  }
+	  ZipIterator operator++(int) {
+		  ZipIterator tmp(*this);
+		  operator++();
+		  return tmp;
+	  }
 	  //todo: add requirement that it works for bidirectional and higher
-	  ZipIterator& operator--() {
+	  ZipIterator& operator--() & {
 		  std::apply([](Iterators&... iter){ ((--iter), ...); }, iterators);
 		  return *this;
+	  }
+	  ZipIterator operator--(int) {
+		  ZipIterator tmp(*this);
+		  operator--();
+		  return tmp;
 	  }
 	  bool operator==(ZipIterator const& other) const {
 		  return base::utils::weakComparison(this->iterators, other.iterators);
@@ -105,6 +118,19 @@ namespace itertools {
 		  return pointer{makeRefs()};
 	  }
 
+	  template<std::size_t Index>
+	  decltype(auto) get() &  { return getImpl<Index>(*this); }
+
+	  template<std::size_t Index>
+	  decltype(auto) get() && { return getImpl<Index>(*this); }
+
+	  template<std::size_t Index>
+	  decltype(auto) get() const &  { return getImpl<Index>(*this); }
+
+	  template<std::size_t Index>
+	  decltype(auto) get() const && { return getImpl<Index>(*this); }
+
+
   private:
 
 	  std::tuple<Iterators...> iterators;
@@ -116,6 +142,19 @@ namespace itertools {
 	  auto makeRefs () {
 		  return makeRefsImpl (std::make_index_sequence<sizeof...(Iterators)>{});
 	  }
+
+	  template<std::size_t Index, typename ThisType>
+	  decltype(auto) getImpl(ThisType&&) {
+		  static_assert(Index < std::tuple_size_v<std::tuple<Iterators...>>, "Index out of bounds for zip iterator");
+		  return std::get<Index>(iterators).operator*();
+	  }
+	  template<std::size_t Index, typename ThisType>
+	  decltype(auto) getImpl(ThisType&&) const {
+		  static_assert(Index < std::tuple_size_v<std::tuple<Iterators...>>, "Index out of bounds for zip iterator");
+		  return std::get<Index>(iterators).operator*();
+	  }
+
+
   };
 
 #ifndef __cpp_concepts
@@ -192,4 +231,30 @@ namespace itertools {
   }
 
 }//!namespace
+
+
+/**
+ * @details
+ * Defining structural binding\n
+ *
+ * */
+
+namespace std {
+  template<typename... Iterators>
+  struct tuple_size<itertools::ZipIterator<Iterators...>> :
+  public std::integral_constant<std::size_t, sizeof...(Iterators)> {};
+
+template<std::size_t Index, typename... Iterators>
+struct tuple_element<Index, itertools::ZipIterator<Iterators...>> {
+	using type = decltype(std::get<Index>(std::declval<itertools::ZipIterator<Iterators...>>().operator*() ));
+};
+
+template<std::size_t Index, typename... Iterators>
+decltype(auto) get(itertools::ZipIterator<Iterators...> &&zip_iterator) {
+	return std::forward<itertools::ZipIterator<Iterators...>>(zip_iterator).template get<Index>();
+}
+
+}//!namespace
+
+
 #endif //ITERTOOLS_H
