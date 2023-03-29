@@ -11,7 +11,6 @@
 #include <concepts>
 #endif
 
-
 #ifndef ITERTOOLS_H
 #define ITERTOOLS_H
 
@@ -48,6 +47,9 @@ namespace itertools {
 
 	template<typename... MaybeContainer>
 	using AreAllContainers = std::enable_if_t<areAllContainers_v<MaybeContainer...>(), bool>;
+
+	template<typename... MaybeContainer>
+	using NotAreAllContainers = std::enable_if_t<!areAllContainers_v<MaybeContainer...>(), bool>;
 
 
 	template<typename Element>
@@ -184,6 +186,40 @@ namespace itertools {
 			  typename std::remove_reference_t<Type>::const_iterator,
 			  typename std::remove_reference_t<Type>::iterator>;
 
+//#ifndef __cpp_concepts
+//	  template<typename Type, requirements::IsContainer<Type> = true>
+//#else
+//	  template<typename Type>
+//	  requirements::IsContainer<Type>  && requirements::IsNotIterator<Type>
+//#endif
+//	struct IteratorTypeSelector {
+//		using iter_type = std::conditional_t<
+//				std::is_const_v<std::remove_reference_t<Type>>,
+//				typename std::remove_reference_t<Type>::const_iterator,
+//				typename std::remove_reference_t<Type>::iterator>;
+//	};
+//
+//#ifndef __cpp_concepts
+//	  template<typename Type, requirements::IsIterator<Type> = true>
+//#else
+//	  template<typename Type>
+//		requires requirements::IsNotContainer<Type> && requirements::IsIterator<Type>
+//#endif
+//	  struct IteratorTypeSelector {
+//		  using iter_type = std::conditional_t<
+//				  std::is_const_v<std::remove_reference_t<Type>>,
+//				  typename std::remove_reference_t<Type>::const_iterator,
+//				  typename std::remove_reference_t<Type>::iterator>;
+//	  };
+//
+//
+//	  template<typename Type>
+//	  using IteratorTypeSelect = std::conditional_t<
+//			  requirements::isContainer_v<Type>(),
+//			  ContainerIteratorTypeSelect<Type>,
+//	  void>;
+
+
   public:
 	  using zip_type = ZipIterator<IteratorTypeSelect<Container>...>;
 
@@ -211,5 +247,13 @@ namespace itertools {
   auto zip(Containers&&... containers) {
 	  return Zipper<Containers...> (std::forward<Containers>(containers)...);
   }
+
+
+  //todo: add iterators requirements
+  template<typename... Iters>
+  auto zip(Iters&&... iters) {
+	  return Zipper<Iters...> (std::forward<Iters>(iters)...);
+  }
+
 }//!namespace
 #endif //ITERTOOLS_H

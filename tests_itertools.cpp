@@ -9,6 +9,9 @@
 #include <string>
 #include <sstream>
 
+
+//#define WRONG_ITERATOR_COMPILE_FAILURE
+
 TEST(BasicsItertools, Vector_String) {
 	std::vector<int> v{ 1,2,3,4,5 };
 	std::string s { "abcdefghhlk" };
@@ -95,7 +98,7 @@ TEST(BasicsItertools, VectorBool) {
 	ss << std::boolalpha;
 
 	for (auto const& [b, c] : itertools::zip(v)) {
-		ss << b << ' ' c << '\n';
+		ss << b << ' ' << c << '\n';
 	}
 	std::string check {R"(true a
 true b
@@ -126,15 +129,17 @@ TEST(BasicsItertools, NonContainers) {
 
 	[[maybe_unused]] std::vector<int> v{ 1,2,3,4,5 };
 
-//	auto z = itertools::zip(v, not_ok); //doesn't compile
-	//todo: add compile-time test
+#ifdef WRONG_ITERATOR_COMPILE_FAILURE
+	auto z = itertools::zip(v, not_ok);
+#endif
 }
 
 TEST(BasicsItertools, BadIteratorCategory) {
 	[[maybe_unused]] auto osit = std::ostream_iterator<int>{std::cout};
 	[[maybe_unused]] std::vector<int> v{ 1,2,3,4,5 };
-//	auto wit = itertools::zip(osit, v.begin());
-	//todo: add compile-time test
+#ifdef WRONG_ITERATOR_COMPILE_FAILURE
+	auto wit = itertools::zip(osit, v.begin());
+#endif
 }
 int main() {
 	testing::InitGoogleTest();
