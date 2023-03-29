@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ "master" ]
 
+env:
+  BUILD_TYPE: Debug
+  INSTALL_LOCATION: ".local"
+
 jobs:
   gcc:
     runs-on: ubuntu-latest
@@ -69,8 +73,6 @@ jobs:
           - { name: 'Debug', build_type: 'Debug' }
           - { name: 'Release', build_type: 'Release' }
     steps:
-      - name: Set up MSVC
-        uses: microsoft/setup-msbuild@v1.0.2
       - name: Install GoogleTest
         run: |
           git clone https://github.com/google/googletest.git --branch release-1.10.0
@@ -83,9 +85,14 @@ jobs:
         with:
           submodules: recursive
         uses: actions/checkout@v3
+      - name: Configure
+        run: cmake -Bbuild -DCMAKE_INSTALL_PREFIX="$HOME/$env:INSTALL_LOCATION"
+
       - name: Build
-        run: msbuild /p:Configuration=$BUILD_TYPE
+        run: cmake --build build --config "$env:BUILD_TYPE" -j4
+
       - name: Run tests
-        run: ./bin/$BUILD_TYPE/zip_in_cpp_tests.exe
-        env:
-          BUILD_TYPE: ${{ matrix.config.name }}
+        run: |
+          pushd build
+          ctest -C "$env:BUILD_TYPE" -VV
+          popd        
