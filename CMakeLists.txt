@@ -38,15 +38,15 @@ if (NOT WIN32)
                 PRIVATE
                 -fsanitize=address -g -fno-omit-frame-pointer -fno-optimize-sibling-calls
                 -fsanitize=undefined -g -fno-omit-frame-pointer
-                #            -fsanitize=leak -g
-                #            -fsanitize=thread -fPIE -pie -g
+#            -fsanitize=leak -g
+#            -fsanitize=thread -fPIE -pie -g
                 )
         target_link_options(${PROJECT_NAME}_tests
                 PRIVATE
                 -fsanitize=address
                 -fsanitize=undefined
-                #            -fsanitize=leak
-                #            -fsanitize=thread
+#            -fsanitize=leak
+#            -fsanitize=thread
                 )
         target_link_libraries(${PROJECT_NAME}_tests
                 GTest::GTest

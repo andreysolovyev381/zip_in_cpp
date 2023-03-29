@@ -1,12 +1,7 @@
 ### Zip in C++
 #### Reasoning
 I like small useful snippets, like this one. Let myself have an entertaining night while coding this exercise.
-Although this one is a bit advanced, compared to the others. Iterator's big five is defined in the class:
-- value_type
-- reference
-- difference
-- pointer
-- iterator_category
+Although this one is a bit advanced, compared to the others. Iterator's big five is properly defined in the class: value_type, reference, difference_type, pointer, iterator_category.
 
 #### Usage
 Pretty much straightforward, see the test file. Here is the most vivid example:
@@ -29,19 +24,3 @@ Feel free to use it for your needs at your own risk. No guarantees of any kind i
 
 #### License
 MIT License
-
-
-      - name: Cooking GoogleTest lib
-        run: |
-          cd /usr/src/googletest/googletest
-          sudo mkdir build
-          cd build
-          sudo cmake .. -DBUILD_SHARED_LIBS=ON -DINSTALL_GTEST=ON -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
-          sudo cmake --build .
-          cd lib
-          sudo cp libgtest* /usr/lib/
-          cd ../../
-          sudo rm -rf build
-          sudo mkdir /usr/local/lib/googletest
-          sudo ln -s /usr/lib/libgtest.a /usr/local/lib/googletest/libgtest.a
-          sudo ln -s /usr/lib/libgtest_main.a /usr/local/lib/googletest/libgtest_main.a
