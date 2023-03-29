@@ -32,7 +32,6 @@ if (NOT WIN32)
     if(GTest_FOUND)
         message(STATUS " <===> FOUND GTest, including and linking...")
         include_directories(${GTEST_INCLUDE_DIRS})
-        enable_testing()
         add_executable(${PROJECT_NAME}_tests tests_itertools.cpp)
         target_compile_options(${PROJECT_NAME}_tests
                 PRIVATE
@@ -59,7 +58,6 @@ else ()
     if(GTest_FOUND)
         message(STATUS " <===> FOUND GTest, including and linking...")
         include_directories(${GTEST_INCLUDE_DIRS})
-        enable_testing()
         add_executable(${PROJECT_NAME}_tests tests_itertools.cpp)
         target_link_libraries(${PROJECT_NAME}_tests
                 GTest::GTest
@@ -69,3 +67,6 @@ else ()
     endif()
 endif()
 
+enable_testing()
+include(GoogleTest)
+gtest_discover_tests(${PROJECT_NAME}_tests)
