@@ -44,7 +44,7 @@ Another example, if to zip iterators, not containers
 Works like a charm in 17 and 20.
 
 #### Dependencies
-Header only, STL only.
+Header only, STL only. 
 
 #### Disclaimer 
 Feel free to use it for your needs at your own risk. No guarantees of any kind is given :)
