@@ -2,6 +2,7 @@
 ### Reasoning
 I like small useful snippets, like this one. Let myself have an entertaining night while coding this exercise.
 Although this one is a bit advanced, compared to the others. Iterator's big five is properly defined in the class: value_type, reference, difference_type, pointer, iterator_category. So the other C++ code will consider this zip_iterator as an iterator as well.
+Lots of concept (C++20) and SFINAE (C++17) guards will fail the attempts of enlightened user to get an iterator from void type.  
 
 ### Usage
 Pretty much straightforward, see the test file. Here is the most vivid example:
