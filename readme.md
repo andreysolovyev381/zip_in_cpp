@@ -1,7 +1,7 @@
 ### Zip in C++
 #### Reasoning
 I like small useful snippets, like this one. Let myself have an entertaining night while coding this exercise.
-Although this one is a bit advanced, compared to the others. Iterator's big five is properly defined in the class: value_type, reference, difference_type, pointer, iterator_category.
+Although this one is a bit advanced, compared to the others. Iterator's big five is properly defined in the class: value_type, reference, difference_type, pointer, iterator_category. So the other C++ code will consider this zip_iterator as an iterator as well.
 
 #### Usage
 Pretty much straightforward, see the test file. Here is the most vivid example:
@@ -40,7 +40,11 @@ Another example, if to zip iterators, not containers
 
 ```
 
+#### Standard
 Works like a charm in 17 and 20.
+
+#### Dependencies
+Header only, STL only.
 
 #### Disclaimer 
 Feel free to use it for your needs at your own risk. No guarantees of any kind is given :)
