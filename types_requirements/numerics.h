@@ -20,13 +20,13 @@ namespace culib::requirements {
   template <typename Number>
   using IsFloatinPoint = std::enable_if_t<std::is_floating_point_v<Number>, bool>;
   template <typename Number>
-  using IsNotFloatinPoint = std::enable_if_t<not std::is_floating_point_v<Number>, bool>;
+  using IsNotFloatinPoint = std::enable_if_t<!std::is_floating_point_v<Number>, bool>;
 
   template <typename Number>
   using IsIntegral = std::enable_if_t<std::is_integral_v<Number>, bool>;
 
   template <typename Number>
-  using IsNotIntegral = std::enable_if_t<not std::is_integral_v<Number>, bool>;
+  using IsNotIntegral = std::enable_if_t<!std::is_integral_v<Number>, bool>;
 
 
   template <typename I, typename = void>
