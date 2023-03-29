@@ -34,9 +34,9 @@ namespace itertools {
 
 
 #ifndef __cpp_concepts
-  template<typename... Iter>
+  template<typename... Iterators>
 #else
-  template<culib::requirements::AreAllIterators ...Iter>
+  template<culib::requirements::AreAllIterators ...Iterators>
 #endif
   class ZipIterator {
   private:
@@ -65,27 +65,28 @@ namespace itertools {
 	  };
 
   public:
-	  using iterator_type = ZipIterator<Iter...>;
-	  using iterator_category = std::bidirectional_iterator_tag;
-	  using value_type = typename std::tuple<ValueTypeFor<Iter>...>;
-	  using reference = typename std::tuple<ReferenceTypeFor<Iter>...>;
-	  using difference_type = typename std::tuple<DifferenceTypeFor<Iter>...>;
+	  using iterator_type = ZipIterator<Iterators...>;
+	  using iterator_category = std::forward_iterator_tag;
+	  using value_type = typename std::tuple<ValueTypeFor<Iterators>...>;
+	  using reference = typename std::tuple<ReferenceTypeFor<Iterators>...>;
+	  using difference_type = typename std::tuple<DifferenceTypeFor<Iterators>...>;
 	  using pointer = arrowProxy<reference>;
 
 	  ZipIterator() = delete;
 
 #ifndef __cpp_concepts
-	  template<culib::requirements::AreAllIterators<Iter...> = true>
+	  template<culib::requirements::AreAllIterators<Iterators...> = true>
 #endif
 	  explicit
-	  ZipIterator(Iter... iter) :iterators (std::make_tuple(iter...))
+	  ZipIterator(Iterators... iters) :iterators (std::make_tuple(iters...))
 	  {}
 	  ZipIterator& operator++() {
-		  std::apply([](Iter&... iter){ ((++iter), ...); }, iterators);
+		  std::apply([](Iterators&... iter){ ((++iter), ...); }, iterators);
 		  return *this;
 	  }
+	  //todo: add requirement that it works for bidirectional and higher
 	  ZipIterator& operator--() {
-		  std::apply([](Iter&... iter){ ((--iter), ...); }, iterators);
+		  std::apply([](Iterators&... iter){ ((--iter), ...); }, iterators);
 		  return *this;
 	  }
 	  bool operator==(ZipIterator const& other) const {
@@ -106,18 +107,22 @@ namespace itertools {
 
   private:
 
-	  std::tuple<Iter...> iterators;
+	  std::tuple<Iterators...> iterators;
 
 	  template <std::size_t... I>
 	  auto makeRefsImpl (std::index_sequence<I...>) {
 		  return reference ({ std::get<I>(iterators).operator*()... });
 	  }
 	  auto makeRefs () {
-		  return makeRefsImpl (std::make_index_sequence<sizeof...(Iter)>{});
+		  return makeRefsImpl (std::make_index_sequence<sizeof...(Iterators)>{});
 	  }
   };
 
-  template<typename... Inputs>
+#ifndef __cpp_concepts
+  template<typename... Containers>
+#else
+  template<culib::requirements::AreAllContainers... Containers>
+#endif
   class Zipper {
   private:
 
@@ -134,12 +139,15 @@ namespace itertools {
 			  typename std::remove_reference_t<Input>::iterator>;
 
   public:
-	  using zip_type = ZipIterator<IteratorTypeSelect<Inputs>...>;
+	  using zip_type = ZipIterator<IteratorTypeSelect<Containers>...>;
 
 	  Zipper() = delete;
 
+#ifndef __cpp_concepts
+	  template<culib::requirements::AreAllContainers<Containers...> = true>
+#endif
 	  explicit
-	  Zipper(Inputs&&... inputs)
+	  Zipper(Containers&&... inputs)
 			  : begin_ (inputs.begin()...)
 			  , end_ (inputs.end()...)
 	  {}
