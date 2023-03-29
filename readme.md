@@ -28,8 +28,8 @@ Another example, if to zip iterators, not containers
 	std::vector<int> v{ 1,2,3,4,5 };
 	std::string s { "abcdefghlk" };
 
-    /// Here it is, zipping input iterators
-    auto begin = itertools::zip(v.begin(), s.crbegin(), test_struct.begin());
+	/// Here it is, zipping input iterators
+	auto begin = itertools::zip(v.begin(), s.crbegin(), test_struct.begin());
 	auto end = itertools::zip(v.end(), s.crend(), test_struct.end());
 
 	for (auto itb = begin, ite = end; itb != ite; ++itb ) {
