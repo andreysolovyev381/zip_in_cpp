@@ -1,8 +1,12 @@
 ## Zip in C++
-### Reasoning
+### Reasoning and Some info
 I like small useful snippets, like this one. Let myself have an entertaining night while coding this exercise.
-Although this one is a bit advanced, compared to the others. Iterator's big five is properly defined in the class: value_type, reference, difference_type, pointer, iterator_category. So the other C++ code will consider this zip_iterator as an iterator as well.
-Lots of concept (C++20) and SFINAE (C++17) guards will fail the attempts of enlightened user to get an iterator from void type.  
+- Standard and Compilers: works like a charm in 17 and 20. Is compiled by gcc and clang for Linux and by something for Windows (thanks to Github Actions).
+- Dependencies: header only, STL only.
+- It is tested - see the file.
+- Iterator's big five is properly defined in the class: value_type, reference, difference_type, pointer, iterator_category. So other C++ code will consider this zip_iterator as an iterator as well.
+- UI is simple - call 'zip' using either arbitrary number of containers or arbitrary number of iterators as the arguments. 
+- Lots of concept (C++20) and SFINAE (C++17) guards will fail the attempts of enlightened user to get an iterator from type void.
 
 ### Usage
 Pretty much straightforward, see the test file. Here is the most vivid example:
@@ -40,13 +44,6 @@ Another example, if to zip iterators, not containers
 	}
 
 ```
-
-### Standard and Compilers
-Works like a charm in 17 and 20. 
-Is compiled by gcc, clang for Linux and something for Windows (thanks to Github Actions).
-
-### Dependencies
-Header only, STL only. 
 
 ### Disclaimer 
 Feel free to use it for your needs at your own risk. No guarantees of any kind is given :)
