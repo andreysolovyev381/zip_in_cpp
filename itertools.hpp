@@ -32,7 +32,6 @@ namespace itertools {
 	}
   }
 
-
 #ifndef __cpp_concepts
   template<typename... Iterators>
 #else
@@ -81,7 +80,7 @@ namespace itertools {
 	  template<culib::requirements::AreAllIterators<Iterators...> = true>
 #endif
 	  explicit
-	  ZipIterator(Iterators... iters) :iterators (std::make_tuple(iters...))
+	  ZipIterator(Iterators&&... iters) :iterators (std::make_tuple(std::forward<Iterators>(iters)...))
 	  {}
 	  ZipIterator& operator++() & {
 		  std::apply([](Iterators&... iter){ ((++iter), ...); }, iterators);
@@ -118,6 +117,15 @@ namespace itertools {
 		  return pointer{makeRefs()};
 	  }
 
+	  /**
+	   * @details
+	   * Having this for being able to decompose\n
+	   * this type itself using structural\n
+	   * bindings.\n
+	   * See the tests for the details - \n
+	   * the one, where zipping is for iterators.\n
+	   *
+	   * */
 	  template<std::size_t Index>
 	  decltype(auto) get() &  { return getImpl<Index>(*this); }
 
@@ -144,17 +152,15 @@ namespace itertools {
 	  }
 
 	  template<std::size_t Index, typename ThisType>
-	  decltype(auto) getImpl(ThisType&&) {
+	  decltype(auto) getImpl(ThisType&& t) {
 		  static_assert(Index < std::tuple_size_v<std::tuple<Iterators...>>, "Index out of bounds for zip iterator");
-		  return std::get<Index>(iterators).operator*();
+		  return std::get<Index>(std::forward<ThisType>(t).iterators).operator*();
 	  }
 	  template<std::size_t Index, typename ThisType>
-	  decltype(auto) getImpl(ThisType&&) const {
+	  decltype(auto) getImpl(ThisType&& t) const {
 		  static_assert(Index < std::tuple_size_v<std::tuple<Iterators...>>, "Index out of bounds for zip iterator");
-		  return std::get<Index>(iterators).operator*();
+		  return std::get<Index>(std::forward<ThisType>(t).iterators).operator*();
 	  }
-
-
   };
 
 #ifndef __cpp_concepts
@@ -187,8 +193,8 @@ namespace itertools {
 #endif
 	  explicit
 	  Zipper(Containers&&... inputs)
-			  : begin_ (inputs.begin()...)
-			  , end_ (inputs.end()...)
+			  : begin_ (std::forward<Containers>(inputs).begin()...)
+			  , end_ (std::forward<Containers>(inputs).end()...)
 	  {}
 
 	  zip_type begin() const { return begin_ ; }
@@ -249,10 +255,6 @@ struct tuple_element<Index, itertools::ZipIterator<Iterators...>> {
 	using type = decltype(std::get<Index>(std::declval<itertools::ZipIterator<Iterators...>>().operator*() ));
 };
 
-template<std::size_t Index, typename... Iterators>
-decltype(auto) get(itertools::ZipIterator<Iterators...> &&zip_iterator) {
-	return std::forward<itertools::ZipIterator<Iterators...>>(zip_iterator).template get<Index>();
-}
 
 }//!namespace
 

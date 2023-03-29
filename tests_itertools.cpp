@@ -12,7 +12,7 @@
 
 //#define WRONG_ITERATOR_COMPILE_FAILURE
 
-TEST(BasicsItertools, Vector_String) {
+TEST(BasicsItertools, IteratingOver_Vector_String) {
 	std::vector<int> v{ 1,2,3,4,5 };
 	std::string s { "abcdefghhlk" };
 
@@ -29,7 +29,7 @@ e 5
 )"};
 	ASSERT_EQ(ss.str(), check);
 }
-TEST(BasicsItertools, DifferentIterTypes) {
+TEST(BasicsItertools, IteratingOver_DifferentIterTypes) {
 	using namespace std::string_literals;
 
 	struct TestStruct {
@@ -61,7 +61,7 @@ TEST(BasicsItertools, DifferentIterTypes) {
 )"};
 	ASSERT_EQ(ss.str(), check);
 }
-TEST(BasicsItertools, Vector_Map) {
+TEST(BasicsItertools, IteratingOver_Vector_Map) {
 	using namespace std::string_literals;
 	std::vector<int> v{ 1,2,3,4,5 };
 	std::map<int, std::string> m {
@@ -81,7 +81,7 @@ TEST(BasicsItertools, Vector_Map) {
 )"};
 	ASSERT_EQ(ss.str(), check);
 }
-TEST(BasicsItertools, Vector_Map_String) {
+TEST(BasicsItertools, IteratingOver_Vector_Map_String) {
 	using namespace std::string_literals;
 	std::vector<int> v{ 1,2,3,4,5 };
 	std::map<int, std::string> m {
@@ -106,7 +106,7 @@ TEST(BasicsItertools, Vector_Map_String) {
 )"};
 	ASSERT_EQ(ss.str(), check);
 }
-TEST(BasicsItertools, OneContainer) {
+TEST(BasicsItertools, IteratingOver_OneContainer) {
 	std::vector<int> v{ 1,2,3,4,5 };
 	std::stringstream ss;
 
@@ -121,15 +121,14 @@ TEST(BasicsItertools, OneContainer) {
 )"};
 	ASSERT_EQ(ss.str(), check);
 }
-#if 0
-TEST(BasicsItertools, VectorBool) {
+TEST(BasicsItertools, IteratingOver_VectorBool) {
 	std::vector<bool> v{ 1,1,0,1,0 };
 	std::string s { "abcdefghhlk" };
 
 	std::stringstream ss;
 	ss << std::boolalpha;
 
-	for (auto const& [b, c] : itertools::zip(v)) {
+	for (auto const& [b, c] : itertools::zip(v, s)) {
 		ss << b << ' ' << c << '\n';
 	}
 	std::string check {R"(true a
@@ -140,8 +139,7 @@ false e
 )"};
 	ASSERT_EQ(ss.str(), check);
 }
-#endif
-TEST(BasicsItertools, TwoContainers_OneEmpty) {
+TEST(BasicsItertools, IteratingOver_TwoContainers_OneEmpty) {
 	std::vector<int> v{ 1,2,3,4,5 };
 	std::string s;
 	ASSERT_TRUE(s.empty());
@@ -155,9 +153,55 @@ TEST(BasicsItertools, TwoContainers_OneEmpty) {
 	std::string check;
 	ASSERT_EQ(ss.str(), check);
 }
+TEST(BasicsItertools, Distance) {
+	using namespace std::string_literals;
+
+	std::vector<int> v{ 1,2,3,4,5 };
+	std::map<int, std::string> m { {1, "one"s}, {2, "two"s}, {3, "three"s} };
+
+	auto begin = itertools::zip(v.begin(), m.crbegin());
+	auto const adv {2u};
+	auto second = std::next(begin, adv);
+
+	auto dist = std::distance(begin, second);
+	ASSERT_EQ(dist, adv);
+}
+TEST(BasicsItertools, Assignment) {
+	std::vector<int> v{ 1,2,3,4,5 };
+	std::string s {"abc"};
+
+	auto begin = itertools::zip(v.begin(), s.rbegin());
+	auto &[i, c] = begin;
+	ASSERT_EQ(i, 1);
+	ASSERT_EQ(c, 'c');
+	i = 42;
+	c = 'x';
+	auto begin_new = itertools::zip(v.begin(), s.rbegin());
+	auto &[i_new, c_new] = begin_new;
+	ASSERT_EQ(i_new, 42);
+	ASSERT_EQ(c_new, 'x');
+}
+TEST(BasicsItertools, MoveIteratorsCheck) {
+	std::vector<int> v1{ 1,2,3,4,5 }, v2{ 1,2,3,4,5 };
+	std::map<int, std::vector<int>> mv;
+	mv[1] = std::move(v1);
+	mv[2] = std::move(v2);
+	ASSERT_TRUE(!mv[2].empty());
+
+	std::string s1{"abc"}, s2{"abc"};
+	std::map<int, std::string> ms;
+	ms[1] = std::move(s1);
+	ms[2] = std::move(s2);
+	ASSERT_TRUE(!ms[2].empty());
+
+	auto rbegin = itertools::zip(std::make_move_iterator(mv.rbegin()), std::make_move_iterator(ms.rbegin()));
+	[[maybe_unused]] auto &&[i, c] = std::move(rbegin);
+	ASSERT_TRUE(mv[2].empty());
+	ASSERT_TRUE(ms[2].empty());
+}
 
 #ifdef WRONG_ITERATOR_COMPILE_FAILURE
-TEST(BasicsItertools, NonContainers) {
+TEST(BasicsItertools, Failure_NonContainers) {
 	struct NotOkContainer { int value {42}; };
 	[[maybe_unused]] NotOkContainer not_ok;
 
@@ -166,7 +210,7 @@ TEST(BasicsItertools, NonContainers) {
 	auto z = itertools::zip(v, not_ok);
 }
 
-TEST(BasicsItertools, BadIteratorCategory) {
+TEST(BasicsItertools, Failure_BadIteratorCategory) {
 	[[maybe_unused]] auto osit = std::ostream_iterator<int>{std::cout};
 	[[maybe_unused]] std::vector<int> v{ 1,2,3,4,5 };
 	auto wit = itertools::zip(osit, v.begin());
