@@ -201,10 +201,10 @@ TEST(BasicsItertools, MoveIteratorsCheck) {
 	auto begin = itertools::zip(std::make_move_iterator(v1.begin()), std::make_move_iterator(s1.begin()));
 	auto &&[i, c] = std::move(begin);
 
-//	ASSERT_TRUE(v1.at(0).empty());
+//	ASSERT_TRUE(v1.at(0).empty()); //todo: fix required
 	ASSERT_EQ(i, v1_at_0_copy);
 
-//	ASSERT_TRUE(s1.at(0).empty());
+//	ASSERT_TRUE(s1.at(0).empty()); //todo: fix required
 	ASSERT_EQ(c, s1_at_0_copy);
 }
 
