@@ -217,13 +217,13 @@ TEST(BasicsItertools, Failure_NonContainers) {
 
 	auto z = itertools::zip(v, not_ok);
 }
-
 TEST(BasicsItertools, Failure_BadIteratorCategory) {
 	[[maybe_unused]] auto osit = std::ostream_iterator<int>{std::cout};
 	[[maybe_unused]] std::vector<int> v{ 1,2,3,4,5 };
 	auto wit = itertools::zip(osit, v.begin());
 }
 #endif
+
 int main() {
 	testing::InitGoogleTest();
 	testing::GTEST_FLAG(color) = "yes";
