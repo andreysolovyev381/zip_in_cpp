@@ -19,10 +19,11 @@ namespace culib::requirements {
    * The first part of the code (C++20) was taken from an example\n
    * used by Konstantin Vladimirov while delivering\n
    * his lectures on C++. Example name is "junk_iterator".\n\n
-   * Obviously, his work on Iter requirements by using\n
-   * a C++20 features provided a ground for the same\n
-   * functionality, but developed in C++17, that is roughly\n
+   * His work on Iter requirements by using the\n
+   * C++20 features provided a framework for the same\n
+   * functionality developed in C++17, that is roughly\n
    * the second part of this source file.\n
+   * See the appropriate comment.\n
    * */
 
   // -------------------------------- stdlib-like part
@@ -76,6 +77,10 @@ namespace culib::requirements {
   BidirectionalIterator<I> && RandomAccess<I> &&
 		  DerivedFrom<typename I::iterator_category, std::random_access_iterator_tag>;
 
+  /*@brief
+   * Block of code, written by Konstantin Valdimirov,\n
+   * ends here.\n
+   * */
 #else
 
   template <class Derived, class Base>
