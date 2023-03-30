@@ -1,7 +1,7 @@
 ## Zip in C++
 ### Reasoning and Some info
 I like small useful snippets, like this one. Let myself have an entertaining night while coding this exercise.
-- Standard and Compilers: works like a charm in 17 and 20 (in case you are not yet in 23, but when you are there, you should take a look at [respective page at cppref](https://en.cppreference.com/w/cpp/ranges/zip_view)). Anyway, this impl is compiled by gcc and clang for Linux and by something for Windows (thanks to Github Actions).
+- Standard and Compilers: works like a charm in 17 and 20 (in case you are not yet in 23, but when you are there, you should take a look at [respective page at cppref](https://en.cppreference.com/w/cpp/ranges/zip_view)). Anyway, this impl is compiled by gcc and clang for Linux.
 - Dependencies: header only, STL only.
 - It is tested - see the file.
 - Iterator's big five is properly defined in the class: value_type, reference, difference_type, pointer, iterator_category. So other C++ code will consider this zip_iterator as an iterator as well.
