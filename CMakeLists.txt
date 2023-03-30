@@ -52,6 +52,11 @@ if (NOT WIN32)
                 GTest::GTest
                 pthread
                 )
+
+        enable_testing()
+        include(GoogleTest)
+        gtest_discover_tests(${PROJECT_NAME}_tests)
+        
     else()
         message(STATUS " <===> NOT FOUND GTest")
     endif()
@@ -63,6 +68,11 @@ else ()
         target_link_libraries(${PROJECT_NAME}_tests
                 GTest::GTest
                 )
+
+        enable_testing()
+        include(GoogleTest)
+        gtest_discover_tests(${PROJECT_NAME}_tests)
+
     else()
         message(STATUS " <===> NOT FOUND GTest")
     endif()
