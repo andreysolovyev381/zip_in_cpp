@@ -125,7 +125,7 @@ namespace itertools {
 	  template<std::size_t Index>
 	  decltype(auto) get() const &  { return std::get<Index>(iterators).operator*(); }
 	  template<std::size_t Index>
-	  decltype(auto) get() const && { return std::move(std::get<Index>(iterators).operator*()); }
+	  decltype(auto) get() const && { return std::get<Index>(iterators).operator*(); }
 
   private:
 
