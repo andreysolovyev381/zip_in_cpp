@@ -77,7 +77,7 @@ namespace culib::requirements {
   BidirectionalIterator<I> && RandomAccess<I> &&
 		  DerivedFrom<typename I::iterator_category, std::random_access_iterator_tag>;
 
-  /*@brief
+  /** @brief
    * Block of code, written by Konstantin Valdimirov,\n
    * ends here.\n
    * */
