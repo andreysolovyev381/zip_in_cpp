@@ -3,6 +3,7 @@
 //
 
 #include <gtest/gtest.h>
+
 #include "itertools.hpp"
 #include <vector>
 #include <map>
@@ -182,23 +183,29 @@ TEST(BasicsItertools, Assignment) {
 	ASSERT_EQ(c_new, 'x');
 }
 TEST(BasicsItertools, MoveIteratorsCheck) {
-	std::vector<int> v1{ 1,2,3,4,5 }, v2{ 1,2,3,4,5 };
-	std::map<int, std::vector<int>> mv;
-	mv[1] = std::move(v1);
-	mv[2] = std::move(v2);
-	ASSERT_TRUE(!mv[2].empty());
+	std::vector<std::vector<int>>
+			v1{{ 1,2,3,4,5 }, {6, 7, 8} };
+	ASSERT_TRUE(!v1.empty());
+	ASSERT_TRUE(!v1.at(0).empty());
 
-	std::string s1{"abc"}, s2{"abc"};
-	std::map<int, std::string> ms;
-	ms[1] = std::move(s1);
-	ms[2] = std::move(s2);
-	ASSERT_TRUE(!ms[2].empty());
+	auto v1_at_0_copy = v1.at(0);
 
-	auto rbegin = itertools::zip(std::make_move_iterator(mv.rbegin()), std::make_move_iterator(ms.rbegin()));
-	[[maybe_unused]] auto &&[i, c] = std::move(rbegin);
-	// todo: fix it
-//	ASSERT_TRUE(mv[2].empty());
-//	ASSERT_TRUE(ms[2].empty());
+	std::vector<std::string>
+			s1{{ "0123456789_0123456789" }, {"0123456789_0123456789_0123456789"} };
+
+	ASSERT_TRUE(!s1.empty());
+	ASSERT_TRUE(!s1.at(0).empty());
+
+	auto s1_at_0_copy = s1.at(0);
+
+	auto begin = itertools::zip(std::make_move_iterator(v1.begin()), std::make_move_iterator(s1.begin()));
+	auto &&[i, c] = std::move(begin);
+
+//	ASSERT_TRUE(v1.at(0).empty());
+	ASSERT_EQ(i, v1_at_0_copy);
+//
+//	ASSERT_TRUE(s1.at(0).empty());
+	ASSERT_EQ(c, s1_at_0_copy);
 }
 
 #ifdef WRONG_ITERATOR_COMPILE_FAILURE
@@ -217,9 +224,9 @@ TEST(BasicsItertools, Failure_BadIteratorCategory) {
 	auto wit = itertools::zip(osit, v.begin());
 }
 #endif
-
 int main() {
 	testing::InitGoogleTest();
 	testing::GTEST_FLAG(color) = "yes";
+
 	return RUN_ALL_TESTS();
 }

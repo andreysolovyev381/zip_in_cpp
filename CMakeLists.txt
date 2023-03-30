@@ -5,7 +5,7 @@ project(${PROJECT_NAME}
         DESCRIPTION "Zip in Cpp"
         LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 if (NOT WIN32)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Werror")
 else()
@@ -67,7 +67,3 @@ else ()
         message(STATUS " <===> NOT FOUND GTest")
     endif()
 endif()
-
-enable_testing()
-include(GoogleTest)
-gtest_discover_tests(${PROJECT_NAME}_tests)
