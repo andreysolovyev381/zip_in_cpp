@@ -203,7 +203,7 @@ TEST(BasicsItertools, MoveIteratorsCheck) {
 
 //	ASSERT_TRUE(v1.at(0).empty());
 	ASSERT_EQ(i, v1_at_0_copy);
-//
+
 //	ASSERT_TRUE(s1.at(0).empty());
 	ASSERT_EQ(c, s1_at_0_copy);
 }

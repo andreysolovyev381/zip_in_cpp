@@ -74,6 +74,10 @@ namespace itertools {
 	  using difference_type = std::common_type_t<DifferenceTypeFor<Iterators>...>;
 
 	  ZipIterator() = delete;
+	  ZipIterator(ZipIterator const&) = default;
+	  ZipIterator(ZipIterator &&) = default;
+	  ZipIterator& operator = (ZipIterator const&) = default;
+	  ZipIterator& operator = (ZipIterator &&) = default;
 
 #ifndef __cpp_concepts
 	  template<culib::requirements::AreAllIterators<Iterators...> = true>
