@@ -52,5 +52,5 @@ if(GTest_FOUND)
     gtest_discover_tests(${PROJECT_NAME}_tests)
 
 else()
-    message(STATUS " <===> NOT FOUND GTest")
+    message(STATUS " <===> NOT FOUND GTest, nothing to run the tests on")
 endif()

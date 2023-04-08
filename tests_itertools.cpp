@@ -207,22 +207,143 @@ TEST(BasicsItertools, MoveIteratorsCheck) {
 //	ASSERT_TRUE(s1.at(0).empty()); //todo: fix required
 	ASSERT_EQ(c, s1_at_0_copy);
 }
-
-#ifdef WRONG_ITERATOR_COMPILE_FAILURE
 TEST(BasicsItertools, Failure_NonContainers) {
 	struct NotOkContainer { int value {42}; };
 	[[maybe_unused]] NotOkContainer not_ok;
 
 	[[maybe_unused]] std::vector<int> v{ 1,2,3,4,5 };
 
-	auto z = itertools::zip(v, not_ok);
+#ifdef WRONG_ITERATOR_COMPILE_FAILURE
+	auto z = itertools::zip(v, not_ok); //fails to compile
+#endif
 }
 TEST(BasicsItertools, Failure_BadIteratorCategory) {
 	[[maybe_unused]] auto osit = std::ostream_iterator<int>{std::cout};
 	[[maybe_unused]] std::vector<int> v{ 1,2,3,4,5 };
-	auto wit = itertools::zip(osit, v.begin());
-}
+#ifdef WRONG_ITERATOR_COMPILE_FAILURE
+	auto wit = itertools::zip(osit, v.begin()); //fails to compile
 #endif
+}
+TEST(BasicsItertools, OperatorPreIncrement) {
+	std::vector<int> v1{ 1,2 };
+	std::vector<int> v2{ 2,3 };
+
+	auto it = itertools::zip(v1.begin(), v2.begin());
+	++it;
+	auto [v1_elem, v2_elem] = it;
+	ASSERT_EQ(v1_elem, 2);
+	ASSERT_EQ(v2_elem, 3);
+}
+TEST(BasicsItertools, OperatorPostIncrement) {
+	std::vector<int> v1{ 1,2 };
+	std::vector<int> v2{ 2,3 };
+
+	auto it = itertools::zip(v1, v2);
+	it.begin()++;
+	auto [v1_elem, v2_elem] = it.begin();
+	ASSERT_EQ(v1_elem, 2);
+	ASSERT_EQ(v2_elem, 3);
+}
+TEST(BasicsItertools, OperatorPreDecrement) {
+	std::vector<int> v1{ 1,2 };
+	std::vector<int> v2{ 2,3 };
+
+	auto it = itertools::zip(v1.begin(), v2.begin());
+	++it;
+	--it;
+	auto [v1_elem, v2_elem] = it;
+	ASSERT_EQ(v1_elem, 1);
+	ASSERT_EQ(v2_elem, 2);
+}
+TEST(BasicsItertools, OperatorPostDecrement) {
+	std::vector<int> v1{ 1,2 };
+	std::vector<int> v2{ 2,3 };
+
+	auto it = itertools::zip(v1.begin(), v2.begin());
+	++it;
+	it--;
+	auto [v1_elem, v2_elem] = it;
+	ASSERT_EQ(v1_elem, 1);
+	ASSERT_EQ(v2_elem, 2);
+}
+TEST(BasicsItertools, Failure_DecrementForForward) {
+	std::vector<int> v{ 1,2 };
+	std::unordered_map<int, int> m{ {1, 2}, {2,3} };
+
+	auto it = itertools::zip(v.begin(), m.begin());
+	++it;
+#ifdef WRONG_ITERATOR_COMPILE_FAILURE
+	it--; //fails to compile
+#endif
+}
+TEST(BasicsItertools, OperatorAssignPlus) {
+	std::vector<int> v{ 1,2,3 };
+	std::map<int, int> m{ {1, 2}, {2,3}, {3,5} };
+
+	auto it = itertools::zip(v.begin(), m.begin());
+	it += 2;
+	auto [v_elem, m_elem] = it;
+	auto [key, value] = m_elem;
+	ASSERT_EQ(v_elem, 3);
+	ASSERT_EQ(key, 3);
+	ASSERT_EQ(value, 5);
+}
+TEST(BasicsItertools, OperatorPlus) {
+	std::vector<int> v{ 1,2,3 };
+	std::map<int, int> m{ {1, 2}, {2,3}, {3,5} };
+
+	auto it = itertools::zip(v.begin(), m.begin()) + 2;
+	auto [v_elem, m_elem] = it;
+	auto [key, value] = m_elem;
+	ASSERT_EQ(v_elem, 3);
+	ASSERT_EQ(key, 3);
+	ASSERT_EQ(value, 5);
+}
+TEST(BasicsItertools, OperatorAssignMinus) {
+	std::vector<int> v{ 1,2,3 };
+	std::map<int, int> m{ {1, 2}, {2,3}, {3,5} };
+
+	auto it = itertools::zip(v.begin(), m.begin());
+	it += 2;
+	it -= 2;
+	auto [v_elem, m_elem] = it;
+	auto [key, value] = m_elem;
+	ASSERT_EQ(v_elem, 1);
+	ASSERT_EQ(key, 1);
+	ASSERT_EQ(value, 2);
+}
+TEST(BasicsItertools, OperatorMinus) {
+	std::vector<int> v{ 1,2,3 };
+	std::map<int, int> m{ {1, 2}, {2,3}, {3,5} };
+
+	auto it = itertools::zip(v.begin(), m.begin()) + 2;
+	it = it - 2;
+	auto [v_elem, m_elem] = it;
+	auto [key, value] = m_elem;
+	ASSERT_EQ(v_elem, 1);
+	ASSERT_EQ(key, 1);
+	ASSERT_EQ(value, 2);
+}
+TEST(BasicsItertools, Failure_OperatorAssignMinusForNonBidirectional) {
+	std::vector<int> v{ 1,2 };
+	std::unordered_map<int, int> m{ {1, 2}, {2,3} };
+
+	auto it = itertools::zip(v.begin(), m.begin());
+	++it;
+#ifdef WRONG_ITERATOR_COMPILE_FAILURE
+	it -= 1; //fails to compile
+#endif
+}
+TEST(BasicsItertools, Failure_OperatorMinusForNonBidirectional) {
+	std::vector<int> v{ 1,2 };
+	std::unordered_map<int, int> m{ {1, 2}, {2,3} };
+
+	auto it = itertools::zip(v.begin(), m.begin());
+	++it;
+#ifdef WRONG_ITERATOR_COMPILE_FAILURE
+	it = it - 1; //fails to compile
+#endif
+}
 
 int main() {
 	testing::InitGoogleTest();

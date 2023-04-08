@@ -85,7 +85,7 @@ namespace itertools {
 	  explicit
 	  ZipIterator(Iterators&&... iters) :iterators (std::make_tuple(std::forward<Iterators>(iters)...))
 	  {}
-	  ZipIterator& operator++() & {
+	  ZipIterator& operator++() {
 		  std::apply([](Iterators&... iter){ ((++iter), ...); }, iterators);
 		  return *this;
 	  }
@@ -94,20 +94,68 @@ namespace itertools {
 		  operator++();
 		  return tmp;
 	  }
-	  //todo: add requirement that it works for bidirectional and higher
-	  ZipIterator& operator--() & {
+	  ZipIterator& operator+=(int n) {
+		  if constexpr (culib::requirements::areAllRandomAccess_v<IteratorCategoryFor<Iterators>...>()) {
+			  std::apply([n](Iterators&... iter){ ((iter += n), ...); }, iterators);
+		  }
+		  else  {
+			  for (int i = 0; i<n; ++i) ++(*this);
+		  }
+		  return *this;
+	  }
+
+#ifndef __cpp_concepts
+	  template<
+			  typename DummyArg = iterator_category,
+			  culib::requirements::BiDirectionalOrRandomAccess<DummyArg> = true>
+#endif
+	  ZipIterator& operator--()
+#ifdef __cpp_concepts
+	  requires culib::requirements::BiDirectionalOrRandomAccess<iterator_category>
+#endif
+	  {
 		  std::apply([](Iterators&... iter){ ((--iter), ...); }, iterators);
 		  return *this;
 	  }
-	  ZipIterator operator--(int) {
+
+#ifndef __cpp_concepts
+	  template<
+			  typename DummyArg = iterator_category,
+			  culib::requirements::BiDirectionalOrRandomAccess<DummyArg> = true>
+#endif
+	  ZipIterator operator--(int)
+#ifdef __cpp_concepts
+	  requires culib::requirements::BiDirectionalOrRandomAccess<iterator_category>
+#endif
+	  {
 		  ZipIterator tmp(*this);
 		  operator--();
 		  return tmp;
 	  }
-	  bool operator==(ZipIterator const& other) const {
+
+
+#ifndef __cpp_concepts
+	  template<
+			  typename DummyArg = iterator_category,
+			  culib::requirements::BiDirectionalOrRandomAccess<DummyArg> = true>
+#endif
+	  ZipIterator& operator-=(int n)
+#ifdef __cpp_concepts
+	  requires culib::requirements::BiDirectionalOrRandomAccess<iterator_category>
+#endif
+	  {
+		  if constexpr (culib::requirements::areAllRandomAccess_v<IteratorCategoryFor<Iterators>...>()) {
+			  std::apply([n](Iterators&... iter){ ((iter -= n), ...); }, iterators);
+		  }
+		  else {
+			  for (int i = 0; i<n; ++i) --(*this);
+		  }
+		  return *this;
+	  }
+
+	  bool equals(ZipIterator const& other) const {
 		  return base::utils::weakComparison(this->iterators, other.iterators);
 	  }
-	  bool operator!=(ZipIterator const& other) const { return !(*this == other); }
 	  reference operator*() { return makeRefs(); }
 	  reference operator*() const { return makeRefs(); }
 	  //it is supposed to survive just a drill-down
@@ -142,7 +190,32 @@ namespace itertools {
 	  auto makeRefs () {
 		  return makeRefsImpl (std::make_index_sequence<sizeof...(Iterators)>{});
 	  }
+
+
   };
+
+  template<typename... Iterators>
+  static inline bool operator==(ZipIterator<Iterators...> lhs, ZipIterator<Iterators...> rhs) {
+	  return lhs.equals(rhs);
+  }
+
+  template<typename... Iterators>
+  static inline bool operator!=(ZipIterator<Iterators...> lhs, ZipIterator<Iterators...> rhs) {
+	  return !lhs.equals(rhs);
+  }
+
+  template<typename... Iterators>
+  static inline ZipIterator<Iterators...> operator+(ZipIterator<Iterators...> it, int n) {
+	  it += n;
+	  return it;
+  }
+
+  template<typename... Iterators>
+  static inline ZipIterator<Iterators...> operator-(ZipIterator<Iterators...> it, int n) {
+	  it -= n;
+	  return it;
+  }
+
 
 #ifndef __cpp_concepts
   template<typename... Containers>
@@ -178,8 +251,10 @@ namespace itertools {
 			  , end_ (std::forward<Containers>(inputs).end()...)
 	  {}
 
-	  zip_type begin() const { return begin_ ; }
-	  zip_type end() const { return end_; }
+	  const zip_type begin() const { return begin_ ; }
+	  zip_type& begin() { return begin_ ; }
+	  const zip_type end() const { return end_; }
+	  zip_type& end() { return end_; }
   private:
 	  zip_type begin_, end_;
   };

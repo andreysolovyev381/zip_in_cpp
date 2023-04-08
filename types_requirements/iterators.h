@@ -81,19 +81,23 @@ namespace culib::requirements {
    * Block of code, written by Konstantin Valdimirov,\n
    * ends here.\n
    * */
+
+  template <typename IterCategory>
+  concept BiDirectionalOrRandomAccess =
+		  DerivedFrom<IterCategory, std::bidirectional_iterator_tag> ||
+		  DerivedFrom<IterCategory, std::random_access_iterator_tag>;
+
+
+  template <typename... IterCategory>
+  inline constexpr bool areAllRandomAccess_v (){
+	  bool result{true};
+	  ((result = result && DerivedFrom<IterCategory, std::random_access_iterator_tag>), ...);
+	  return result;
+  }
+
+
+
 #else
-
-  template <class Derived, class Base>
-  using IsDerivedFrom = std::enable_if_t<std::is_base_of_v<Base, Derived>, bool>;
-
-  template <class Derived, class Base>
-  using IsNotDerivedFrom = std::enable_if_t<!std::is_base_of_v<Base, Derived>, bool>;
-
-  template <class Derived, class Base, IsDerivedFrom<Derived, Base> = true>
-  constexpr bool isDerivedFrom_v () { return true ;}
-
-  template <class Derived, class Base, IsNotDerivedFrom<Derived, Base> = true>
-  constexpr bool isDerivedFrom_v () { return false; }
 
   template <typename Iter, typename = void>
   struct MaybeIterator : std::false_type {};
@@ -125,28 +129,28 @@ namespace culib::requirements {
 
   template <typename Iter, IsIterator<Iter> = true>
   using InputIterator = std::enable_if_t<
-		  isDerivedFrom_v<
-				  typename std::iterator_traits<Iter>::iterator_category,
-				  std::input_iterator_tag>,
-		  bool>;
+		  std::is_base_of_v<
+				  std::input_iterator_tag,
+				  typename std::iterator_traits<Iter>::iterator_category>
+				  , bool>;
 
   template <typename Iter, IsIterator<Iter> = true>
   using ForwardIterator = std::enable_if_t<std::conjunction_v<
 		  InputIterator<Iter>,
 		  IsIncrementable<Iter>,
-		  IsDerivedFrom<
-				  typename std::iterator_traits<Iter>::iterator_category,
-				  std::forward_iterator_tag>
-  >, bool>;
+		  std::is_base_of<
+				  std::forward_iterator_tag,
+				  typename std::iterator_traits<Iter>::iterator_category>>
+				  , bool>;
 
   template <typename Iter, IsIterator<Iter> = true>
   using BidirectionalIterator = std::enable_if_t<std::conjunction_v<
 		  ForwardIterator<Iter>,
 		  IsDecrementable<Iter>,
-		  IsDerivedFrom<
-				  typename std::iterator_traits<Iter>::iterator_category,
-				  std::bidirectional_iterator_tag>
-  >, bool>;
+		  std::is_base_of<
+				  std::bidirectional_iterator_tag,
+				  typename std::iterator_traits<Iter>::iterator_category>>
+				  , bool>;
 
 
   template <typename I, typename = void>
@@ -156,7 +160,7 @@ namespace culib::requirements {
 		  decltype(std::declval<I::difference_type>()),
 		  decltype(std::declval<I>() + std::declval<I::difference_type>()),
 		  decltype(std::declval<I>() - std::declval<I::difference_type>())>
-		  > : std::true_type {};
+  > : std::true_type {};
 
   template <typename I>
   inline constexpr bool is_random_access_type_v {RandomAccessType<I>::value} ;
@@ -164,15 +168,46 @@ namespace culib::requirements {
   template <typename Iter>
   using HasRandomAccess = std::enable_if_t<is_random_access_type_v<Iter>, bool>;
 
-
   template <typename Iter, IsIterator<Iter> = true>
   using RandomAccessIterator = std::enable_if_t<std::conjunction_v<
 		  BidirectionalIterator<Iter>,
 		  HasRandomAccess<Iter>,
-		  IsDerivedFrom<
-				  typename std::iterator_traits<Iter>::iterator_category,
-				  std::random_access_iterator_tag>
-  >, bool>;
+		  std::is_base_of<
+				  std::random_access_iterator_tag,
+				  typename std::iterator_traits<Iter>::iterator_category>>
+				  , bool>;
+
+
+  namespace details {
+
+	template <typename IterCategory, typename = void>
+	struct MaybeBiDirectionalOrRandomAccess : std::false_type {};
+
+	template <typename IterCategory>
+	struct MaybeBiDirectionalOrRandomAccess <IterCategory, std::void_t<
+			std::disjunction <
+					std::is_base_of<std::bidirectional_iterator_tag, IterCategory>,
+					std::is_base_of<std::random_access_iterator_tag, IterCategory>
+			>
+	>> : std::true_type {};
+
+  }//!namespace
+
+  template <typename IterCategory>
+  inline constexpr bool is_bidirectional_or_random_access_v {
+		  details::MaybeBiDirectionalOrRandomAccess<IterCategory>::value };
+
+  template <typename IterCategory>
+  using BiDirectionalOrRandomAccess = std::enable_if_t<
+		  is_bidirectional_or_random_access_v<IterCategory>
+		  , bool>;
+
+  template <typename... IterCategory>
+  inline constexpr bool areAllRandomAccess_v (){
+	  bool result{true};
+	  ((result = result && std::is_base_of_v<std::random_access_iterator_tag, IterCategory>), ...);
+	  return result;
+  }
 
 
 #endif
