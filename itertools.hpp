@@ -190,8 +190,6 @@ namespace itertools {
 	  auto makeRefs () {
 		  return makeRefsImpl (std::make_index_sequence<sizeof...(Iterators)>{});
 	  }
-
-
   };
 
   template<typename... Iterators>
@@ -215,7 +213,6 @@ namespace itertools {
 	  it -= n;
 	  return it;
   }
-
 
 #ifndef __cpp_concepts
   template<typename... Containers>
@@ -251,9 +248,9 @@ namespace itertools {
 			  , end_ (std::forward<Containers>(inputs).end()...)
 	  {}
 
-	  const zip_type begin() const { return begin_ ; }
+	  zip_type begin() const { return begin_ ; }
 	  zip_type& begin() { return begin_ ; }
-	  const zip_type end() const { return end_; }
+	  zip_type end() const { return end_; }
 	  zip_type& end() { return end_; }
   private:
 	  zip_type begin_, end_;
