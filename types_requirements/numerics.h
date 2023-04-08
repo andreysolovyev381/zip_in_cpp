@@ -17,18 +17,6 @@ namespace culib::requirements {
 
 #ifndef __cpp_concepts
 
-  template <typename Number>
-  using IsFloatinPoint = std::enable_if_t<std::is_floating_point_v<Number>, bool>;
-  template <typename Number>
-  using IsNotFloatinPoint = std::enable_if_t<!std::is_floating_point_v<Number>, bool>;
-
-  template <typename Number>
-  using IsIntegral = std::enable_if_t<std::is_integral_v<Number>, bool>;
-
-  template <typename Number>
-  using IsNotIntegral = std::enable_if_t<!std::is_integral_v<Number>, bool>;
-
-
   template <typename I, typename = void>
   struct MaybeIncrementable : std::false_type {} ;
   template <typename I>
