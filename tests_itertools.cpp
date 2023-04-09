@@ -50,7 +50,7 @@ TEST(BasicsItertools, IteratingOver_DifferentIterTypes) {
 
 	std::stringstream ss;
 
-	for (auto itb = begin, ite = end; itb != ite; ++itb ) {
+	for (auto itb = begin; itb != end; ++itb ) {
 		auto const &[normal, const_reverse, const_normal] = itb;
 		auto const &[i, c] = const_normal;
 		ss << normal << ' ' << const_reverse << ' ' << i << ' ' << c << '\n';
