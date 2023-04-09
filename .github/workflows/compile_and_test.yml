@@ -29,20 +29,20 @@ jobs:
           echo github.event_name: ${{ github.event_name }}
       - name: CMake Lib debug config C++17
         run: cmake -S . -B debug -DCMAKE_CXX_STANDARD=17 -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_BUILD_TYPE=Debug
-      - name: CMake Lib debug build
+      - name: CMake Lib debug build C++17
         run: cmake --build debug
-      - name: Run tests
+      - name: Run tests C++17
         run: debug/zip_in_cpp_tests
 
       - name: CMake Lib debug config C++20
         run: cmake -S . -B debug -DCMAKE_CXX_STANDARD=20 -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_BUILD_TYPE=Debug
-      - name: CMake Lib debug build
+      - name: CMake Lib debug build C++20
         run: cmake --build debug
-      - name: Run tests
+      - name: Run tests C++20
         run: debug/zip_in_cpp_tests
 
       - name: CMake Lib release config
-        run: cmake -S . -B release -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_BUILD_TYPE=Release
+        run: cmake -S . -B release -DCMAKE_CXX_STANDARD=20 -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_BUILD_TYPE=Release
       - name: CMake Lib release build
         run: cmake --build release
 
@@ -62,13 +62,21 @@ jobs:
         run: |
           echo github.event.action: ${{ github.event.action }}
           echo github.event_name: ${{ github.event_name }}
+      - name: CMake Lib debug config C++17
+        run: cmake -S . -B debug -DCMAKE_CXX_STANDARD=17 -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_BUILD_TYPE=Debug
+      - name: CMake Lib debug build C++17
+        run: cmake --build debug
+      - name: Run tests C++17
+        run: debug/zip_in_cpp_tests
+
+      - name: CMake Lib debug config C++20
+        run: cmake -S . -B debug -DCMAKE_CXX_STANDARD=20 -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_BUILD_TYPE=Debug
+      - name: CMake Lib debug build C++20
+        run: cmake --build debug
+      - name: Run tests C++20
+        run: debug/zip_in_cpp_tests
+
       - name: CMake Lib release config
-        run: cmake -S . -B release -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Release
+        run: cmake -S . -B release -DCMAKE_CXX_STANDARD=20 -DCMAKE_CXX_COMPILER=g++-11 -DCMAKE_BUILD_TYPE=Release
       - name: CMake Lib release build
         run: cmake --build release
-      - name: CMake Lib debug config
-        run: cmake -S . -B debug -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Debug
-      - name: CMake Lib debug build
-        run: cmake --build debug
-      - name: Run tests
-        run: debug/zip_in_cpp_tests
