@@ -37,7 +37,7 @@ Another example, if zipping iterators instead of containers:
 	auto begin = itertools::zip(v.cbegin(), s.crbegin(), test_struct.begin());
 	auto end = itertools::zip(v.cend(), s.crend(), test_struct.end());
 
-	for (auto itb = begin, ite = end; itb != ite; ++itb ) {
+	for (auto itb = begin; itb != end; ++itb ) {
 		auto const &[normal, const_reverse, const_normal] = itb;
 		auto const &[i, c] = const_normal;
 		std::cout << normal << ' ' << const_reverse << ' ' << i << ' ' << c << '\n';
