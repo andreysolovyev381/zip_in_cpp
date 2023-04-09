@@ -33,7 +33,7 @@ Another example, if zipping iterators instead of containers:
 	std::vector<int> v{ 1,2,3,4,5 };
 	std::string s { "abcdefghlk" };
 
-	/// Here it is, zipping input iterators
+	/// Here it is, zipping different input iterators - normal, constant and reverse
 	auto begin = itertools::zip(v.cbegin(), s.crbegin(), test_struct.begin());
 	auto end = itertools::zip(v.cend(), s.crend(), test_struct.end());
 
