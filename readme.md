@@ -21,7 +21,7 @@ Pretty much straightforward, see the test file. Here is the most vivid example:
 	}
 ```
 
-Another example, if zipping iterators instead of containers
+Another example, if zipping iterators instead of containers:
 
 ```c++
 	struct TestStruct {
