@@ -18,7 +18,7 @@ jobs:
         shell: bash
     steps:
       - name: Install google test and boost, also install g++-11
-        run: sudo apt-get install libgtest-dev googletest googletest-tools google-mock g++-11
+        run: sudo apt-get install libgtest-dev googletest google-mock g++-11
       - name: Checkout repository
         with:
           submodules: recursive
@@ -53,7 +53,7 @@ jobs:
         shell: bash
     steps:
       - name: Install google test and boost, also install clang-15
-        run: sudo apt-get install libgtest-dev googletest googletest-tools google-mock clang-15
+        run: sudo apt-get install libgtest-dev googletest google-mock clang-15
       - name: Checkout repository
         with:
           submodules: recursive
